@@ -1,4 +1,4 @@
-package request
+package dto
 
 type StudentAuthParams struct {
 	ID     string `json:"studentId"`

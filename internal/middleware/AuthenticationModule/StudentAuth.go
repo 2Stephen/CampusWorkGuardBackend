@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"CampusWorkGuardBackend/models/request"
+	"CampusWorkGuardBackend/internal/model"
 	"context"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
@@ -11,48 +11,7 @@ import (
 	"strings"
 )
 
-type CHSIStudentInfo struct {
-	Name         string
-	Gender       string
-	Birthday     string
-	Nation       string
-	School       string
-	Level        string
-	Major        string
-	Duration     string
-	DegreeType   string
-	StudyMode    string
-	College      string
-	Department   string
-	EntranceDate string
-	Status       string
-	ExpectedGrad string
-	Vcode        string
-	StudentID    string
-	Email        string
-}
-
-func (cHSIStudentInfo *CHSIStudentInfo) StudentAuth(params request.StudentAuthParams) bool {
-	// http服务调用chrome，chrome打开学信网接口进行认证
-	log.Println("Starting student authentication for ID:", params.ID)
-	cHSIStudentInfo.CHSIAuth(params.Vcode)
-	// 对比信息
-	// 输出获取到的学生信息
-	log.Printf("Retrieved Student Info: %+v\n", cHSIStudentInfo)
-	if cHSIStudentInfo.School == params.School && cHSIStudentInfo.Vcode == params.Vcode {
-		log.Println("Student authentication successful for StudentID:", params.ID)
-		cHSIStudentInfo.StudentID = params.ID
-		cHSIStudentInfo.Email = params.Email
-		// 调用DTO存储认证信息
-
-		return true
-	} else {
-		log.Println("Student authentication failed for StudentID:", params.ID)
-		return false
-	}
-}
-
-func (cHSIStudentInfo *CHSIStudentInfo) CHSIAuth(vcode string) {
+func CHSIAuth(vcode string) (*model.CHSIStudentInfo, error) {
 	// 1. 获取真实浏览器的 websocket 地址
 	wsURL := os.Getenv("CHROME_WS_URL")
 
@@ -76,24 +35,35 @@ func (cHSIStudentInfo *CHSIStudentInfo) CHSIAuth(vcode string) {
 
 	if err != nil {
 		fmt.Println("错误：", err)
-		return
+		return nil, err
 	}
 
 	// 解析html
-	err = cHSIStudentInfo.ParseStudentInfo(html)
+	var cHSIStudentInfo *model.CHSIStudentInfo
+	cHSIStudentInfo, err = parseStudentInfo(html)
 	if err != nil {
-		fmt.Println("解析错误：", err)
-		return
+		log.Println("解析学生信息错误：", err)
+		return nil, err
 	}
+	return cHSIStudentInfo, nil
 }
 
-func (cHSIStudentInfo *CHSIStudentInfo) ParseStudentInfo(html string) error {
-	log.Println(html)
+func parseStudentInfo(html string) (*model.CHSIStudentInfo, error) {
+	var cHSIStudentInfo model.CHSIStudentInfo
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	// 判断学信网验证码是否已过期
+	fmt.Println(html)
+	if strings.Contains(doc.Text(), "在线验证报告已过期") {
+		return nil, fmt.Errorf("学信网验证码已过期")
+	}
+	// 判断学信网验证码是否不存在
+	if strings.Contains(doc.Text(), "此在线验证码无效") {
+		return nil, fmt.Errorf("学信网验证码无效")
+	}
 	// 遍历每个 .report-info-item
 	doc.Find(".report-info-item").Each(func(i int, s *goquery.Selection) {
 		label := strings.TrimSpace(s.Find(".label").Text())
@@ -136,5 +106,5 @@ func (cHSIStudentInfo *CHSIStudentInfo) ParseStudentInfo(html string) error {
 	// 获取在线验证码
 	cHSIStudentInfo.Vcode = strings.TrimSpace(doc.Find(".yzm").Text())
 
-	return nil
+	return &cHSIStudentInfo, nil
 }

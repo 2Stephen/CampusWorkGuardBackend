@@ -1,8 +1,8 @@
-package routers
+package router
 
 import (
-	"CampusWorkGuardBackend/controllers/AuthenticationModuleController"
-	"CampusWorkGuardBackend/middlewares/TokenAuthRequired"
+	controllers "CampusWorkGuardBackend/internal/controller"
+	middlewares "CampusWorkGuardBackend/internal/middleware/TokenAuthRequired"
 	"github.com/gin-gonic/gin"
 )
 

@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"CampusWorkGuardBackend/models/response"
+	"CampusWorkGuardBackend/internal/model/response"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,7 +15,7 @@ func TokenAuthRequired() gin.HandlerFunc {
 			return
 		}
 		//const mockUserId = 1
-		//nickName, err := models.GetNicknameById(mockUserId) // 模拟获取用户昵称
+		//nickName, err := model.GetNicknameById(mockUserId) // 模拟获取用户昵称
 		//if err != nil {
 		//	c.Abort()
 		//	response.Fail(c, 500, "获取用户信息失败")
