@@ -1,5 +1,10 @@
 package model
 
+type School struct {
+	Id   int    `gorm:"column:id;primaryKey"`
+	Name string `gorm:"column:name"`
+}
+
 type CHSIStudentInfo struct {
 	Id           int    `gorm:"column:id;primaryKey"`
 	Name         string `gorm:"column:name"`

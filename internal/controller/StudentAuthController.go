@@ -8,6 +8,17 @@ import (
 	"log"
 )
 
+func GetSchoolListController(c *gin.Context) {
+	search := c.Query("search")
+	schools, err := service.GetSchoolList(search)
+	if err != nil {
+		log.Println("Error retrieving school list:", err)
+		response.Fail(c, 500, "Failed to retrieve school list")
+		return
+	}
+	response.Success(c, schools)
+}
+
 func AuthenticationStudentController(c *gin.Context) {
 	var (
 		params dto.StudentAuthParams

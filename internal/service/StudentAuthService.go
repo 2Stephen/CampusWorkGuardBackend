@@ -9,6 +9,12 @@ import (
 	"log"
 )
 
+func GetSchoolList(search string) ([]model.School, error) {
+	// 调用repository层的方法从数据库获取学校列表
+	filteredSchools, err := repository.GetSchoolList(search)
+	return filteredSchools, err
+}
+
 func StudentAuth(params dto.StudentAuthParams) (*model.CHSIStudentInfo, error) {
 	// http服务调用chrome，chrome打开学信网接口进行认证
 	log.Println("Starting student authentication for ID:", params.ID)

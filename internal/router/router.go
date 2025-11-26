@@ -11,6 +11,7 @@ func SetupRouter() *gin.Engine {
 	api := r.Group("/api")
 	api.Use(middlewares.TokenAuthRequired())
 	{
+		api.GET("/school", controllers.GetSchoolListController)
 		// routes
 		auth := api.Group("/auth")
 		{
