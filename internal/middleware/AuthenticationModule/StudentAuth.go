@@ -56,7 +56,6 @@ func parseStudentInfo(html string) (*model.CHSIStudentInfo, error) {
 	}
 
 	// 判断学信网验证码是否已过期
-	fmt.Println(html)
 	if strings.Contains(doc.Text(), "在线验证报告已过期") {
 		return nil, fmt.Errorf("学信网验证码已过期")
 	}
