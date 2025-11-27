@@ -1,4 +1,4 @@
-## 注册同步入school_users逻辑
+## ~~注册同步入school_users逻辑~~
 
 ## ~~验证码逻辑~~
 

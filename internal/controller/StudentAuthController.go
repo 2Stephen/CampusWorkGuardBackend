@@ -32,7 +32,7 @@ func AuthenticationStudentController(c *gin.Context) {
 	// 调用service进行认证逻辑处理
 	cHSIStudentInfo, err := service.StudentAuth(params)
 	if err != nil {
-		if err.Error() == "数据库保存学生信息失败" {
+		if err.Error() == "数据库保存学生信息失败" || err.Error() == "获取邮箱验证码失败" {
 			response.Fail(c, 500, err.Error())
 		} else {
 			response.Fail(c, 403, err.Error())

@@ -5,4 +5,5 @@ type StudentAuthParams struct {
 	School string `json:"school"`
 	Vcode  string `json:"vCode"`
 	Email  string `json:"email"`
+	Code   string `json:"code"`
 }
