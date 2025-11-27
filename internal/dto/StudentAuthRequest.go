@@ -7,3 +7,9 @@ type StudentAuthParams struct {
 	Email  string `json:"email"`
 	Code   string `json:"code"`
 }
+
+type StudentLoginParams struct {
+	SchoolId  string `json:"schoolId"`
+	StudentId string `json:"studentId"`
+	Password  string `json:"password"`
+}

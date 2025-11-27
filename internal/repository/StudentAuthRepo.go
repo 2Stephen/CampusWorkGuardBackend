@@ -70,3 +70,13 @@ func CreateCHSIStudentInfo(info *model.CHSIStudentInfo) error {
 	}
 	return err
 }
+
+func GetSchoolUser(schoolId string, studentId string) *model.StudentUser {
+	var user model.StudentUser
+	err := initialize.DB.Where("school_id = ? AND student_id = ?", schoolId, studentId).First(&user).Error
+	if err != nil {
+		log.Println("Error retrieving student user from database:", err)
+		return nil
+	}
+	return &user
+}

@@ -73,3 +73,24 @@ func StudentAuth(params dto.StudentAuthParams) (*model.CHSIStudentInfo, error) {
 		return nil, errors.New("学信网验证内容与输入内容不符")
 	}
 }
+
+func StudentLogin(params dto.StudentLoginParams) (string, error) {
+	user := repository.GetSchoolUser(params.SchoolId, params.StudentId)
+	if user == nil {
+		return "", errors.New("学生登录失败，检查学号或密码是否正确")
+	}
+	// 哈希验证
+	ok, err := utils.VerifyPassword(params.Password, user.Password)
+	if err != nil {
+		return "", errors.New("学生登录失败" + err.Error())
+	}
+	if !ok {
+		return "", errors.New("学生登录失败，检查学号或密码是否正确")
+	}
+	// 生成JWT token
+	token, err := utils.GenerateJWTToken(user.Id, user.Email)
+	if err != nil {
+		return "", errors.New("生成登录令牌失败")
+	}
+	return token, nil
+}

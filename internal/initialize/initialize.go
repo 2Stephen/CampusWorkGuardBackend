@@ -32,7 +32,12 @@ type Config struct {
 		Port     int    `yaml:"port"`
 		User     string `yaml:"user"`
 		Password string `yaml:"password"`
-	}
+	} `mapstructure:"email"`
+
+	JWTConfig struct {
+		Secret  string `yaml:"secret"`
+		Expires int    `yaml:"expires"`
+	} `mapstructure:"jwt"`
 }
 
 var AppConfig Config

@@ -46,3 +46,25 @@ func AuthenticationStudentController(c *gin.Context) {
 		response.Fail(c, 404, "学信网解析失败，请检查学信网验证码")
 	}
 }
+
+func StudentLoginController(c *gin.Context) {
+	var (
+		params dto.StudentLoginParams
+	)
+	if err := c.ShouldBind(&params); err != nil {
+		log.Println("Error binding request parameters:", err)
+		response.Fail(c, 400, "Invalid request parameters")
+		return
+	}
+	// 调用service进行登录逻辑处理
+	token, err := service.StudentLogin(params)
+	if err != nil {
+		if err.Error() == "用户不存在" || err.Error() == "学号或密码错误" {
+			response.Fail(c, 403, err.Error())
+			return
+		}
+		response.Fail(c, 500, "Failed to login: "+err.Error())
+		return
+	}
+	response.Success(c, gin.H{"token": token})
+}
