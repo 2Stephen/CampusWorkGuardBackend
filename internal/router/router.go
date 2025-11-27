@@ -2,12 +2,14 @@ package router
 
 import (
 	controllers "CampusWorkGuardBackend/internal/controller"
-	middlewares "CampusWorkGuardBackend/internal/middleware/TokenAuthRequired"
+	middlewares "CampusWorkGuardBackend/internal/middleware"
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
+	// 允许跨域
+	r.Use(middlewares.CORSMiddleware())
 	api := r.Group("/api")
 	api.Use(middlewares.TokenAuthRequired())
 	{

@@ -2,7 +2,7 @@ package service
 
 import (
 	"CampusWorkGuardBackend/internal/dto"
-	middlewares "CampusWorkGuardBackend/internal/middleware/AuthenticationModule"
+	middlewares "CampusWorkGuardBackend/internal/middleware"
 	"CampusWorkGuardBackend/internal/model"
 	"CampusWorkGuardBackend/internal/repository"
 	"CampusWorkGuardBackend/internal/utils"
