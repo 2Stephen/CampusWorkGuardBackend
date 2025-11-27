@@ -68,3 +68,25 @@ func StudentLoginController(c *gin.Context) {
 	}
 	response.Success(c, gin.H{"token": token})
 }
+
+func StudentEmailLoginController(c *gin.Context) {
+	var (
+		params dto.StudentEmailLoginParams
+	)
+	if err := c.ShouldBind(&params); err != nil {
+		log.Println("Error binding request parameters:", err)
+		response.Fail(c, 400, "Invalid request parameters")
+		return
+	}
+	// 调用service进行登录逻辑处理
+	token, err := service.StudentEmailLogin(params)
+	if err != nil {
+		if err.Error() == "邮箱验证码有误" || err.Error() == "邮箱验证码已过期，请重新获取" {
+			response.Fail(c, 403, err.Error())
+			return
+		}
+		response.Fail(c, 500, "Failed to login: "+err.Error())
+		return
+	}
+	response.Success(c, gin.H{"token": token})
+}

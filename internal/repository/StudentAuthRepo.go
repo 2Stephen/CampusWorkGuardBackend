@@ -80,3 +80,13 @@ func GetSchoolUser(schoolId string, studentId string) *model.StudentUser {
 	}
 	return &user
 }
+
+func GetStudentUserByEmail(email string) *model.StudentUser {
+	var user model.StudentUser
+	err := initialize.DB.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		log.Println("Error retrieving student user by email from database:", err)
+		return nil
+	}
+	return &user
+}

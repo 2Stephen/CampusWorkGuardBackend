@@ -74,6 +74,35 @@ func StudentAuth(params dto.StudentAuthParams) (*model.CHSIStudentInfo, error) {
 	}
 }
 
+func StudentEmailLogin(params dto.StudentEmailLoginParams) (string, error) {
+	// 验证邮箱验证码
+	realCode, err := utils.RedisGet("login_code:" + params.Email)
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			return "", errors.New("邮箱验证码已过期，请重新获取")
+		}
+		return "", errors.New("获取邮箱验证码失败")
+	}
+	if realCode != params.Code {
+		return "", errors.New("邮箱验证码有误")
+	}
+	// 清除redis缓存验证码
+	err = utils.RedisDel("login_code:" + params.Email)
+	if err != nil {
+		log.Println("删除邮箱验证码缓存失败", err)
+	}
+	user := repository.GetStudentUserByEmail(params.Email)
+	if user == nil {
+		return "", errors.New("学生登录失败，检查邮箱或验证码是否正确")
+	}
+	// 生成JWT token
+	token, err := utils.GenerateJWTToken(user.Id, user.Email)
+	if err != nil {
+		return "", errors.New("生成登录令牌失败")
+	}
+	return token, nil
+}
+
 func StudentLogin(params dto.StudentLoginParams) (string, error) {
 	user := repository.GetSchoolUser(params.SchoolId, params.StudentId)
 	if user == nil {

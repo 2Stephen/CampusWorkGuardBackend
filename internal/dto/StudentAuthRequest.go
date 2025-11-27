@@ -13,3 +13,8 @@ type StudentLoginParams struct {
 	StudentId string `json:"studentId"`
 	Password  string `json:"password"`
 }
+
+type StudentEmailLoginParams struct {
+	Email string `json:"email"`
+	Code  string `json:"code"`
+}
