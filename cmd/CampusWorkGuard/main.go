@@ -11,6 +11,7 @@ import (
 func main() {
 	initialize.InitConfig() // 读取 YAML
 	initialize.InitDB()     // 初始化 GORM
+	initialize.InitRedis()  // 初始化Redis连接配置
 	err := godotenv.Load()  // 读取 .env 文件
 
 	if err != nil {

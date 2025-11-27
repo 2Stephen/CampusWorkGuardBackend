@@ -19,6 +19,7 @@ func SetupRouter() *gin.Engine {
 			{
 				student.POST("/register", controllers.AuthenticationStudentController)
 			}
+			auth.POST("/send_code", controllers.SendCodeController)
 		}
 	}
 	return r

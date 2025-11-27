@@ -1,4 +1,4 @@
-CREATE TABLE chsi_student_infos (
+CREATE TABLE IF NOT EXISTS chsi_student_infos (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(50),
     gender VARCHAR(10),
@@ -19,3 +19,13 @@ CREATE TABLE chsi_student_infos (
     student_id VARCHAR(50),
     email VARCHAR(100)
 );
+
+CREATE TABLE IF NOT EXISTS student_users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    school_id INT NOT NULL,
+    student_id VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    UNIQUE KEY uk_email (email)
+);
+

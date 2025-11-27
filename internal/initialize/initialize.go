@@ -18,13 +18,28 @@ type Config struct {
 		Password string `mapstructure:"password"`
 		DBName   string `mapstructure:"dbname"`
 	} `mapstructure:"mysql"`
+
+	Redis struct {
+		Host     string `yaml:"host"`
+		Port     int    `yaml:"port"`
+		Password string `yaml:"password"`
+		DB       int    `yaml:"db"`
+		PoolSize int    `yaml:"pool_size"`
+	} `mapstructure:"redis"`
+
+	Email struct {
+		Host     string `yaml:"host"`
+		Port     int    `yaml:"port"`
+		User     string `yaml:"user"`
+		Password string `yaml:"password"`
+	}
 }
 
 var AppConfig Config
 
 func InitConfig() {
 	v := viper.New()
-	v.SetConfigName("config")
+	v.SetConfigName("config.back")
 	v.SetConfigType("yaml")
 	v.AddConfigPath("./config") // 配置文件位置
 
