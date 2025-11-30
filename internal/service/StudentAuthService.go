@@ -108,6 +108,9 @@ func StudentLogin(params dto.StudentLoginParams) (string, error) {
 	if user == nil {
 		return "", errors.New("学生登录失败，检查学号或密码是否正确")
 	}
+	if user.Password == "" {
+		return "", errors.New("用户未设置密码，请使用邮箱验证登录后设置密码")
+	}
 	// 哈希验证
 	ok, err := utils.VerifyPassword(params.Password, user.Password)
 	if err != nil {

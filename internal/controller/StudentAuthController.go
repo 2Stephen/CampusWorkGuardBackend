@@ -59,7 +59,7 @@ func StudentLoginController(c *gin.Context) {
 	// 调用service进行登录逻辑处理
 	token, err := service.StudentLogin(params)
 	if err != nil {
-		if err.Error() == "用户不存在" || err.Error() == "学号或密码错误" {
+		if err.Error() == "用户不存在" || err.Error() == "学号或密码错误" || err.Error() == "用户未设置密码，请使用邮箱验证登录后设置密码" {
 			response.Fail(c, 403, err.Error())
 			return
 		}

@@ -9,9 +9,8 @@ import (
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
 	// 允许跨域
-	r.Use(middlewares.CORSMiddleware())
+	//r.Use(middlewares.CORSMiddleware())
 	api := r.Group("/api")
-	api.Use(middlewares.TokenAuthRequired())
 	{
 		api.GET("/school", controllers.GetSchoolListController)
 		// routes
@@ -24,6 +23,12 @@ func SetupRouter() *gin.Engine {
 				student.POST("/email_login", controllers.StudentEmailLoginController)
 			}
 			auth.POST("/send_code", controllers.SendCodeController)
+		}
+		studentUser := api.Group("/student_user")
+		studentUser.Use(middlewares.TokenAuthRequired)
+		{
+			studentUser.POST("/submit", controllers.SubmitJobController)
+			studentUser.POST("/set_password", controllers.SetStudentUserPasswordController)
 		}
 	}
 	return r

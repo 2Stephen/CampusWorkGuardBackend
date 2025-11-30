@@ -2,27 +2,57 @@ package middleware
 
 import (
 	"CampusWorkGuardBackend/internal/model/response"
+	"CampusWorkGuardBackend/internal/utils"
+	"net/http"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 )
 
-func TokenAuthRequired() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		token := c.GetHeader("Authorization")
-		if token == "invalid-token" {
-			//c.AbortWithStatusJSON(401, gin.H{"error": "未授权访问"}) 源码为abort + json
+func TokenAuthRequired(c *gin.Context) {
+	// 1. 获取 Authorization 字段
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		response.Fail(c, 401, "Authorization不能为空")
+		c.Abort()
+		return
+	}
+
+	// 必须是 Bearer 开头
+	if !strings.HasPrefix(authHeader, "Bearer ") {
+		response.Fail(c, 401, "Authorization格式错误，必须是Bearer开头")
+		c.Abort()
+		return
+	}
+
+	// 提取 token
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+	tokenString = strings.TrimSpace(tokenString)
+
+	if tokenString == "" {
+		response.Fail(c, 401, "Token不能为空")
+		c.Abort()
+		return
+	}
+
+	// 2. 解析 Token（内部自动验证密钥 & 过期）
+	claims, err := utils.ParseJWTToken(tokenString)
+	if err != nil {
+		// 判断是否过期
+		if utils.IsTokenExpired(err) {
+			response.Fail(c, 401, "Token已过期，请重新登录")
 			c.Abort()
-			response.Fail(c, 401, "无效的令牌")
 			return
 		}
-		//const mockUserId = 1
-		//nickName, err := model.GetNicknameById(mockUserId) // 模拟获取用户昵称
-		//if err != nil {
-		//	c.Abort()
-		//	response.Fail(c, 500, "获取用户信息失败")
-		//	return
-		//}
-		//c.Set("nickname", nickName) // 设置用户信息到上下文中
-		//c.Set("userId", mockUserId) // 设置用户信息到上下文中
-		c.Next()
+
+		response.Fail(c, http.StatusUnauthorized, "无效的Token:"+err.Error())
+		c.Abort()
+		return
 	}
+
+	// 3. 把解析后的用户信息存入上下文，业务代码可直接使用
+	c.Set("userID", claims.UserID)
+	c.Set("email", claims.Email)
+
+	c.Next()
 }
