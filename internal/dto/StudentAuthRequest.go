@@ -9,7 +9,7 @@ type StudentAuthParams struct {
 }
 
 type StudentLoginParams struct {
-	SchoolId  string `json:"schoolId"`
+	SchoolId  int    `json:"schoolId"`
 	StudentId string `json:"studentId"`
 	Password  string `json:"password"`
 }
