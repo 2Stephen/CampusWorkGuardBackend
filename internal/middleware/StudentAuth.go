@@ -60,7 +60,7 @@ func parseStudentInfo(html string) (*model.CHSIStudentInfo, error) {
 		return nil, fmt.Errorf("学信网验证码已过期")
 	}
 	// 判断学信网验证码是否不存在
-	if strings.Contains(doc.Text(), "此在线验证码无效") {
+	if strings.Contains(doc.Text(), "此在线验证码无效") || strings.Contains(doc.Text(), "系统检测到非法访问") {
 		return nil, fmt.Errorf("学信网验证码无效")
 	}
 	// 遍历每个 .report-info-item

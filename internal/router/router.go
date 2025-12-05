@@ -13,6 +13,7 @@ func SetupRouter() *gin.Engine {
 	api := r.Group("/api")
 	{
 		api.GET("/school", controllers.GetSchoolListController)
+		api.GET("/location", controllers.GetLocationController)
 		// routes
 		auth := api.Group("/auth")
 		{
@@ -21,6 +22,10 @@ func SetupRouter() *gin.Engine {
 				student.POST("/register", controllers.AuthenticationStudentController)
 				student.POST("/login", controllers.StudentLoginController)
 				student.POST("/email_login", controllers.StudentEmailLoginController)
+			}
+			company := auth.Group("/company")
+			{
+				company.POST("/upload_license", controllers.UploadLicenseController)
 			}
 			auth.POST("/send_code", controllers.SendCodeController)
 		}
