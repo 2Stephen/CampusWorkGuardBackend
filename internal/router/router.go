@@ -8,6 +8,7 @@ import (
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
+	r.Static("/uploads", "./uploads")
 	// 允许跨域
 	//r.Use(middlewares.CORSMiddleware())
 	api := r.Group("/api")
