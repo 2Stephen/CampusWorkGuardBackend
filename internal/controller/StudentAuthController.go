@@ -30,7 +30,7 @@ func AuthenticationStudentController(c *gin.Context) {
 		return
 	}
 	// 调用service进行认证逻辑处理
-	cHSIStudentInfo, err := service.StudentAuth(params)
+	cHSIStudentInfo, token, err := service.StudentAuth(params)
 	if err != nil {
 		if err.Error() == "数据库保存学生信息失败" || err.Error() == "获取邮箱验证码失败" {
 			response.Fail(c, 500, err.Error())
@@ -41,7 +41,7 @@ func AuthenticationStudentController(c *gin.Context) {
 	}
 	// 返回认证结果
 	if cHSIStudentInfo != nil {
-		response.Success(c, nil)
+		response.Success(c, gin.H{"token": token})
 	} else {
 		response.Fail(c, 404, "学信网解析失败，请检查学信网验证码")
 	}

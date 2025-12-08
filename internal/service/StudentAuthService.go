@@ -17,17 +17,17 @@ func GetSchoolList(search string) ([]model.School, error) {
 	return filteredSchools, err
 }
 
-func StudentAuth(params dto.StudentAuthParams) (*model.CHSIStudentInfo, error) {
+func StudentAuth(params dto.StudentAuthParams) (*model.CHSIStudentInfo, string, error) {
 	// 验证邮箱验证码
 	realCode, err := utils.RedisGet("register_code:" + params.Email)
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
-			return nil, errors.New("邮箱验证码已过期，请重新获取")
+			return nil, "", errors.New("邮箱验证码已过期，请重新获取")
 		}
-		return nil, errors.New("获取邮箱验证码失败")
+		return nil, "", errors.New("获取邮箱验证码失败")
 	}
 	if realCode != params.Code {
-		return nil, errors.New("邮箱验证码有误")
+		return nil, "", errors.New("邮箱验证码有误")
 	} else {
 		// 清除redis缓存验证码
 		err := utils.RedisDel("register_code:" + params.Email)
@@ -40,7 +40,7 @@ func StudentAuth(params dto.StudentAuthParams) (*model.CHSIStudentInfo, error) {
 
 	cHSIStudentInfo, err := middlewares.CHSIAuth(params.Vcode)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	// 对比信息
 	// 输出获取到的学生信息
@@ -50,13 +50,14 @@ func StudentAuth(params dto.StudentAuthParams) (*model.CHSIStudentInfo, error) {
 		cHSIStudentInfo.StudentID = params.ID
 		cHSIStudentInfo.Email = params.Email
 		// 入库
-		if err := repository.CreateCHSIStudentInfo(cHSIStudentInfo); err != nil {
-			return nil, errors.New("数据库保存学生信息失败")
+		err := repository.CreateCHSIStudentInfo(cHSIStudentInfo)
+		if err != nil {
+			return nil, "", errors.New("数据库保存学生信息失败")
 		}
 		// 查询school ID
 		schoolId, err := repository.GetSchoolId(params.School)
 		if err != nil {
-			return nil, errors.New("学校信息比对失败")
+			return nil, "", errors.New("学校信息比对失败")
 		}
 		studentUser := model.StudentUser{
 			SchoolId:  schoolId,
@@ -64,13 +65,18 @@ func StudentAuth(params dto.StudentAuthParams) (*model.CHSIStudentInfo, error) {
 			Email:     params.Email,
 			Password:  "",
 		}
-		if err := repository.CreateStudentUser(studentUser); err != nil {
-			return nil, errors.New("数据库保存学生信息失败")
+		userId, err := repository.CreateStudentUser(studentUser)
+		if err != nil {
+			return nil, "", errors.New("数据库保存学生信息失败")
 		}
-		return cHSIStudentInfo, nil
+		token, err := utils.GenerateJWTToken(userId, params.Email)
+		if err != nil {
+			return nil, "", errors.New("生成登录令牌失败")
+		}
+		return cHSIStudentInfo, token, nil
 	} else {
 		log.Println("Student authentication failed for StudentID:", params.ID)
-		return nil, errors.New("学信网验证内容与输入内容不符")
+		return nil, "", errors.New("学信网验证内容与输入内容不符")
 	}
 }
 

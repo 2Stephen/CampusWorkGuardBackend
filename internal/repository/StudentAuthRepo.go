@@ -32,24 +32,24 @@ func GetSchoolId(name string) (int, error) {
 	return res, nil
 }
 
-func CreateStudentUser(user model.StudentUser) error {
+func CreateStudentUser(user model.StudentUser) (int, error) {
 	// 检查是否已存在相同学生ID或邮箱的用户
 	var existingUser model.StudentUser
 	err := initialize.DB.Where("email = ?", user.Email).First(&existingUser).Error
 	if err == nil {
 		log.Println("Student user with the same Email already exists")
-		return errors.New("该邮箱已经被注册")
+		return 0, errors.New("该邮箱已经被注册")
 	}
 	err = initialize.DB.Where("school_id = ? and student_id = ?", user.SchoolId, user.StudentId).First(&existingUser).Error
 	if err == nil {
 		log.Println("Student user with the same Email already exists")
-		return errors.New("该学校+学号已被注册，请勿重复注册")
+		return 0, errors.New("该学校+学号已被注册，请勿重复注册")
 	}
 	err = initialize.DB.Create(&user).Error
 	if err != nil {
 		log.Println("Error saving student user to database:", err)
 	}
-	return err
+	return user.Id, err
 }
 
 func CreateCHSIStudentInfo(info *model.CHSIStudentInfo) error {
