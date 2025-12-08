@@ -8,3 +8,8 @@ type CompanyRegisterRequest struct {
 	Code       string `json:"code" binding:"required"`
 	SocialCode string `json:"socialCode" binding:"required"`
 }
+
+type CompanyLoginRequest struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
+}

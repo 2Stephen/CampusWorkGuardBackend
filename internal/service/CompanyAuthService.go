@@ -104,3 +104,27 @@ func RegisterCompanyService(req *dto.CompanyRegisterRequest) (string, error) {
 	}
 	return token, nil
 }
+
+func CompanyLoginService(req *dto.CompanyLoginRequest) (string, error) {
+	user := repository.GetCompanyUserByEmail(req.Email)
+	if user == nil {
+		return "", errors.New("用户登录失败，检查邮箱或密码是否正确")
+	}
+	if user.Password == "" {
+		return "", errors.New("用户未设置密码，请使用邮箱验证登录后设置密码")
+	}
+	// 哈希验证
+	ok, err := utils.VerifyPassword(req.Password, user.Password)
+	if err != nil {
+		return "", errors.New("用户登录失败" + err.Error())
+	}
+	if !ok {
+		return "", errors.New("用户登录失败，检查邮箱或密码是否正确")
+	}
+	// 生成JWT token
+	token, err := utils.GenerateJWTToken(int(user.ID), user.Email)
+	if err != nil {
+		return "", errors.New("生成登录令牌失败")
+	}
+	return token, nil
+}

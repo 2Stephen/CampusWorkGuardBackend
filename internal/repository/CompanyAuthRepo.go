@@ -28,3 +28,12 @@ func CreateCompanyUser(name, email, company, licenseURL, socialCode string) (int
 	// Create 成功后，ID 会自动回填到 user.ID
 	return user.ID, nil
 }
+
+func GetCompanyUserByEmail(email string) *model.CompanyUser {
+	var user model.CompanyUser
+	err := initialize.DB.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		return nil
+	}
+	return &user
+}

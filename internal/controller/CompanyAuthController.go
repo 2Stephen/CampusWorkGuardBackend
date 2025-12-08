@@ -57,3 +57,23 @@ func AuthenticationCompanyController(ctx *gin.Context) {
 	}
 	response.Success(ctx, gin.H{"token": token})
 }
+
+func CompanyLoginController(ctx *gin.Context) {
+	var req dto.CompanyLoginRequest
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.Fail(ctx, http.StatusBadRequest, "Invalid request data")
+		return
+	}
+	// 调用service进行登录逻辑处理
+	token, err := service.CompanyLoginService(&req)
+	if err != nil {
+		if err.Error() == "用户登录失败，检查邮箱或密码是否正确" || err.Error() == "用户未设置密码，请使用邮箱验证登录后设置密码" {
+			response.Fail(ctx, http.StatusForbidden, err.Error())
+			return
+		}
+		response.Fail(ctx, http.StatusInternalServerError, "Failed to login: "+err.Error())
+		return
+	}
+	response.Success(ctx, gin.H{"token": token})
+
+}

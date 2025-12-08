@@ -28,6 +28,7 @@ func SetupRouter() *gin.Engine {
 			{
 				company.POST("/upload_license", controllers.UploadLicenseController)
 				company.POST("/register", controllers.AuthenticationCompanyController)
+				company.POST("/login", controllers.CompanyLoginController)
 			}
 			auth.POST("/send_code", controllers.SendCodeController)
 		}
