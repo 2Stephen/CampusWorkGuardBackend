@@ -47,7 +47,7 @@ func AuthenticationCompanyController(ctx *gin.Context) {
 	}
 	token, err := service.RegisterCompanyService(&req)
 	if err != nil {
-		if err.Error() == "邮箱验证码已过期，请重新获取" || err.Error() == "邮箱验证码有误" {
+		if err.Error() == "邮箱验证码已过期，请重新获取" || err.Error() == "邮箱验证码有误" || err.Error() == "重复注册" {
 			response.Fail(ctx, http.StatusBadRequest, err.Error())
 			return
 		} else {

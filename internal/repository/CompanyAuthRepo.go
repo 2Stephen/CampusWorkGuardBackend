@@ -3,6 +3,7 @@ package repository
 import (
 	"CampusWorkGuardBackend/internal/initialize"
 	"CampusWorkGuardBackend/internal/model"
+	"errors"
 )
 
 func CreateCompanyUser(name, email, company, licenseURL, socialCode string) (int64, error) {
@@ -14,7 +15,12 @@ func CreateCompanyUser(name, email, company, licenseURL, socialCode string) (int
 		SocialCode:   socialCode,
 		VerifyStatus: "验证中",
 	}
-
+	err := initialize.DB.
+		Where("email = ? OR social_code = ?", email, socialCode).
+		First(&model.CompanyUser{}).Error
+	if err == nil {
+		return 0, errors.New("重复注册") // 已存在相同邮箱或社会信用代码的用户
+	}
 	if err := initialize.DB.Create(&user).Error; err != nil {
 		return 0, err
 	}

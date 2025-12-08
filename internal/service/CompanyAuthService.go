@@ -96,7 +96,7 @@ func RegisterCompanyService(req *dto.CompanyRegisterRequest) (string, error) {
 	id, err := repository.CreateCompanyUser(req.Name, req.Email, req.Company, req.LicenseURL, req.SocialCode)
 	if err != nil {
 		log.Println("Error saving company user to database:", err)
-		return "", errors.New("注册失败,请稍后重试")
+		return "", err
 	}
 	token, err := utils.GenerateJWTToken(int(id), req.Email)
 	if err != nil {
