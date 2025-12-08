@@ -1,10 +1,15 @@
 package service
 
 import (
+	"CampusWorkGuardBackend/internal/dto"
+	"CampusWorkGuardBackend/internal/repository"
+	"CampusWorkGuardBackend/internal/utils"
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/redis/go-redis/v9"
 	"io"
+	"log"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -66,4 +71,36 @@ func SaveUploadedFile(file *multipart.FileHeader, dst string) error {
 
 	_, err = io.Copy(out, src)
 	return err
+}
+
+// RegisterCompanyService 公司注册服务，负责处理公司注册逻辑
+func RegisterCompanyService(req *dto.CompanyRegisterRequest) (string, error) {
+	// 验证邮箱验证码
+	realCode, err := utils.RedisGet("register_code:" + req.Email)
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			return "", errors.New("邮箱验证码已过期，请重新获取")
+		}
+		return "", errors.New("获取邮箱验证码失败")
+	}
+	if realCode != req.Code {
+		return "", errors.New("邮箱验证码有误")
+	} else {
+		// 清除redis缓存验证码
+		err := utils.RedisDel("register_code:" + req.Email)
+		if err != nil {
+			log.Println("删除邮箱验证码缓存失败", err)
+		}
+	}
+	// 保存公司信息到数据库
+	id, err := repository.CreateCompanyUser(req.Name, req.Email, req.Company, req.LicenseURL, req.SocialCode)
+	if err != nil {
+		log.Println("Error saving company user to database:", err)
+		return "", errors.New("注册失败,请稍后重试")
+	}
+	token, err := utils.GenerateJWTToken(int(id), req.Email)
+	if err != nil {
+		return "", errors.New("生成登录令牌失败")
+	}
+	return token, nil
 }
