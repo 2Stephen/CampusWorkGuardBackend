@@ -14,3 +14,12 @@ func SaveStudentUserPassword(hashedPassword string, userId string) error {
 	}
 	return nil
 }
+
+func GetStudentUserInfoById(userId int) (*model.StudentUser, error) {
+	var user model.StudentUser
+	err := initialize.DB.Where("id = ?", userId).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}

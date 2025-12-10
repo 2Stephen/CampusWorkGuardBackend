@@ -53,6 +53,7 @@ func TokenAuthRequired(c *gin.Context) {
 	// 3. 把解析后的用户信息存入上下文，业务代码可直接使用
 	c.Set("userID", claims.UserID)
 	c.Set("email", claims.Email)
+	c.Set("role", claims.Role)
 
 	c.Next()
 }

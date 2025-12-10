@@ -18,17 +18,19 @@ func getExpireMinutes() int {
 type Claims struct {
 	UserID int    `json:"user_id"`
 	Email  string `json:"email"`
+	Role   string `json:"role"`
 	jwt.RegisteredClaims
 }
 
 // 生成 Token
-func GenerateJWTToken(userID int, email string) (string, error) {
+func GenerateJWTToken(userID int, email string, role string) (string, error) {
 	JWTExpireMinutes := getExpireMinutes()
 	JWTSecret := getJWTSecret()
 
 	claims := Claims{
 		UserID: userID,
 		Email:  email,
+		Role:   role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(JWTExpireMinutes) * time.Minute)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

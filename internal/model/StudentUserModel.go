@@ -6,4 +6,5 @@ type StudentUser struct {
 	StudentId string `gorm:"column:student_id"`
 	Email     string `gorm:"column:email"`
 	Password  string `gorm:"column:password"`
+	AvatarURL string `gorm:"column:avatar_url"`
 }

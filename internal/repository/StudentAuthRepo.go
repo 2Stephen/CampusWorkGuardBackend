@@ -90,3 +90,13 @@ func GetStudentUserByEmail(email string) *model.StudentUser {
 	}
 	return &user
 }
+
+func GetCHSIStudentInfoByEmail(email string) (*model.CHSIStudentInfo, error) {
+	var info model.CHSIStudentInfo
+	err := initialize.DB.Where("email = ?", email).First(&info).Error
+	if err != nil {
+		log.Println("Error retrieving CHSI student info by email from database:", err)
+		return nil, err
+	}
+	return &info, nil
+}

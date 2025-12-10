@@ -14,6 +14,7 @@ func CreateCompanyUser(name, email, company, licenseURL, socialCode string) (int
 		LicenseURL:   licenseURL,
 		SocialCode:   socialCode,
 		VerifyStatus: "验证中",
+		AvatarURL:    "/uploads/35/3591bdd6-d8dc-4481-ac67-bba462a469cd.png",
 	}
 	err := initialize.DB.
 		Where("email = ? OR social_code = ?", email, socialCode).

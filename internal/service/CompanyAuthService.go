@@ -98,7 +98,7 @@ func RegisterCompanyService(req *dto.CompanyRegisterRequest) (string, error) {
 		log.Println("Error saving company user to database:", err)
 		return "", err
 	}
-	token, err := utils.GenerateJWTToken(int(id), req.Email)
+	token, err := utils.GenerateJWTToken(int(id), req.Email, "company")
 	if err != nil {
 		return "", errors.New("生成登录令牌失败")
 	}
@@ -122,7 +122,7 @@ func CompanyLoginService(req *dto.CompanyLoginRequest) (string, error) {
 		return "", errors.New("用户登录失败，检查邮箱或密码是否正确")
 	}
 	// 生成JWT token
-	token, err := utils.GenerateJWTToken(int(user.ID), user.Email)
+	token, err := utils.GenerateJWTToken(int(user.ID), user.Email, "company")
 	if err != nil {
 		return "", errors.New("生成登录令牌失败")
 	}

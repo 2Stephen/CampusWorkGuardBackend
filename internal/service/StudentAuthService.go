@@ -64,12 +64,13 @@ func StudentAuth(params dto.StudentAuthParams) (*model.CHSIStudentInfo, string, 
 			StudentId: params.ID,
 			Email:     params.Email,
 			Password:  "",
+			AvatarURL: "/uploads/e0/e075c577-8509-4fff-9f38-f1020138345f.png",
 		}
 		userId, err := repository.CreateStudentUser(studentUser)
 		if err != nil {
 			return nil, "", errors.New("数据库保存学生信息失败")
 		}
-		token, err := utils.GenerateJWTToken(userId, params.Email)
+		token, err := utils.GenerateJWTToken(userId, params.Email, "student")
 		if err != nil {
 			return nil, "", errors.New("生成登录令牌失败")
 		}
@@ -102,7 +103,7 @@ func StudentEmailLogin(params dto.StudentEmailLoginParams) (string, error) {
 		return "", errors.New("学生登录失败，检查邮箱或验证码是否正确")
 	}
 	// 生成JWT token
-	token, err := utils.GenerateJWTToken(user.Id, user.Email)
+	token, err := utils.GenerateJWTToken(user.Id, user.Email, "student")
 	if err != nil {
 		return "", errors.New("生成登录令牌失败")
 	}
@@ -126,7 +127,7 @@ func StudentLogin(params dto.StudentLoginParams) (string, error) {
 		return "", errors.New("学生登录失败，检查学号或密码是否正确")
 	}
 	// 生成JWT token
-	token, err := utils.GenerateJWTToken(user.Id, user.Email)
+	token, err := utils.GenerateJWTToken(user.Id, user.Email, "student")
 	if err != nil {
 		return "", errors.New("生成登录令牌失败")
 	}
