@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+mysql:
+  host: 127.0.0.1
+  port: 3306
+  user: root
+  password: 2432757689
+  dbname: CampusWorkGuard
+
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password: ""
+  db: 0
+  pool_size: 20
+
+email:
+  host: smtp.qq.com
+  port: 587
+  user: 123456@qq.com
+  password: abcdefghijkl  # SMTP 授权码
+
+jwt:
+  secret: "xxxx"
+  expires: 60 # token 有效期（分钟）
