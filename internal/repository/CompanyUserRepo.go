@@ -22,3 +22,20 @@ func SaveCompanyUserPassword(hashedPassword string, userId string) error {
 	}
 	return nil
 }
+func UpdateStudentUserAvatarURL(filePath string, userId int) error {
+	err := initialize.DB.Model(&model.StudentUser{}).Where("id = ?", userId).Update("avatar_url", filePath).Error
+	if err != nil {
+		log.Println("Error updating company user avatar URL in database:", err)
+		return err
+	}
+	return nil
+}
+
+func UpdateCompanyUserAvatarURL(filePath string, userId int) error {
+	err := initialize.DB.Model(&model.CompanyUser{}).Where("id = ?", userId).Update("avatar_url", filePath).Error
+	if err != nil {
+		log.Println("Error updating company user avatar URL in database:", err)
+		return err
+	}
+	return nil
+}

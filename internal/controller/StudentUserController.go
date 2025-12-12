@@ -37,3 +37,19 @@ func SetStudentUserPasswordController(c *gin.Context) {
 	}
 	response.Success(c, nil)
 }
+
+func GetStudentUserProfileInfoController(c *gin.Context) {
+	var userID int
+	id, exists := c.Get("userID")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	userID = id.(int)
+	profileInfo, err := service.GetStudentUserProfileInfoService(userID)
+	if err != nil {
+		response.Fail(c, 500, "Failed to get profile info: "+err.Error())
+		return
+	}
+	response.Success(c, profileInfo)
+}

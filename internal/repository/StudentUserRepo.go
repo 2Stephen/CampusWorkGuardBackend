@@ -23,3 +23,12 @@ func GetStudentUserInfoById(userId int) (*model.StudentUser, error) {
 	}
 	return &user, nil
 }
+
+func GetStudentUserByID(id int64) *model.StudentUser {
+	var user model.StudentUser
+	err := initialize.DB.Where("id = ?", id).First(&user).Error
+	if err != nil {
+		return nil
+	}
+	return &user
+}
