@@ -23,15 +23,20 @@ func GetHomeStaticInfo(userId int, role string, email string) (*model.HomeStatic
 			return nil, err
 		}
 		info.Name = chsiInfo.Name
+		info.VerifyStatus = "verified"
+		info.FailInfo = ""
 	} else if role == "company" {
 		companyInfo, err := repository.GetCompanyUserById(userId)
 		if err != nil {
 			return nil, err
 		}
 		info = &model.HomeStaticInfo{
-			AvatarURL: companyInfo.AvatarURL,
-			Name:      companyInfo.Company,
+			AvatarURL:    companyInfo.AvatarURL,
+			Name:         companyInfo.Company,
+			VerifyStatus: companyInfo.VerifyStatus,
+			FailInfo:     companyInfo.FailInfo,
 		}
 	}
+	info.Role = role
 	return info, nil
 }

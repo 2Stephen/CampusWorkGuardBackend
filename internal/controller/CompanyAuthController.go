@@ -58,6 +58,25 @@ func AuthenticationCompanyController(ctx *gin.Context) {
 	response.Success(ctx, gin.H{"token": token})
 }
 
+func CompanyEmailLoginController(c *gin.Context) {
+	var req dto.CompanyEmailLoginRequest
+	if err := c.ShouldBind(&req); err != nil {
+		response.Fail(c, http.StatusBadRequest, "Invalid request data")
+		return
+	}
+	// 调用service进行登录逻辑处理
+	token, err := service.CompanyEmailLogin(req)
+	if err != nil {
+		if err.Error() == "邮箱验证码有误" || err.Error() == "邮箱验证码已过期，请重新获取" {
+			response.Fail(c, 403, err.Error())
+			return
+		}
+		response.Fail(c, 500, "Failed to login: "+err.Error())
+		return
+	}
+	response.Success(c, gin.H{"token": token})
+}
+
 func CompanyLoginController(ctx *gin.Context) {
 	var req dto.CompanyLoginRequest
 	if err := ctx.ShouldBind(&req); err != nil {

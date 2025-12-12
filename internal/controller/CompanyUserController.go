@@ -5,6 +5,7 @@ import (
 	"CampusWorkGuardBackend/internal/model/response"
 	"CampusWorkGuardBackend/internal/service"
 	"github.com/gin-gonic/gin"
+	"log"
 	"strconv"
 )
 
@@ -29,6 +30,21 @@ func SetCompanyUserPasswordController(c *gin.Context) {
 		} else {
 			response.Fail(c, 500, "Failed to set password: "+err.Error())
 		}
+		return
+	}
+	response.Success(c, nil)
+}
+
+func DeleteCompanyUserController(c *gin.Context) {
+	tokenId, exists := c.Get("userID")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	err := service.DeleteCompanyUserService(tokenId.(int))
+	if err != nil {
+		log.Println("删除公司用户失败:", err)
+		response.Fail(c, 500, "Failed to delete company user: "+err.Error())
 		return
 	}
 	response.Success(c, nil)

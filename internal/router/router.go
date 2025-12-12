@@ -29,6 +29,7 @@ func SetupRouter() *gin.Engine {
 				company.POST("/upload_license", controllers.UploadLicenseController)
 				company.POST("/register", controllers.AuthenticationCompanyController)
 				company.POST("/login", controllers.CompanyLoginController)
+				company.POST("/email_login", controllers.CompanyEmailLoginController)
 			}
 			auth.POST("/send_code", controllers.SendCodeController)
 		}
@@ -42,6 +43,7 @@ func SetupRouter() *gin.Engine {
 		companyUser.Use(middlewares.TokenAuthRequired)
 		{
 			companyUser.POST("set_password", controllers.SetCompanyUserPasswordController)
+			companyUser.GET("delete", controllers.DeleteCompanyUserController)
 		}
 		home := api.Group("/home")
 		home.Use(middlewares.TokenAuthRequired)

@@ -25,3 +25,7 @@ func SetCompanyUserPassword(params dto.SetCompanyUserPasswordParams, userID stri
 	// 调用repository层保存密码逻辑
 	return repository.SaveCompanyUserPassword(hashedPassword, userID)
 }
+
+func DeleteCompanyUserService(id int) error {
+	return repository.DeleteCompanyUserByID(int64(id))
+}

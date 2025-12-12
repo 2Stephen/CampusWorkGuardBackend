@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS company_users (
    avatar_url VARCHAR(255) DEFAULT NULL COMMENT '头像URL（默认头像）',
 
    verify_status VARCHAR(20) NOT NULL DEFAULT '验证中'
-       COMMENT '验证状态：验证中/验证成功/验证失败',
+       COMMENT '验证状态：pending/verified/unverified',
 
    fail_info VARCHAR(255) DEFAULT NULL COMMENT '上次验证失败信息',
 
