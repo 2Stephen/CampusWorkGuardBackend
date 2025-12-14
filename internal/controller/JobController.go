@@ -5,10 +5,22 @@ import (
 	"CampusWorkGuardBackend/internal/model/response"
 	"CampusWorkGuardBackend/internal/service"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 func GetCompanyUserJobInfoController(c *gin.Context) {
-	// TODO: Implement the logic to get company user job info
+	id := c.Query("id")
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		response.Fail(c, 400, "Invalid job ID")
+		return
+	}
+	jobInfo, err := service.GetCompanyUserJobInfoService(idInt)
+	if err != nil {
+		response.Fail(c, 500, "Failed to get job info: "+err.Error())
+		return
+	}
+	response.Success(c, jobInfo)
 }
 
 func PostJobController(c *gin.Context) {
