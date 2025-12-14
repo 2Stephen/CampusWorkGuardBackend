@@ -39,3 +39,12 @@ func UpdateCompanyUserAvatarURL(filePath string, userId int) error {
 	}
 	return nil
 }
+
+func GetCompanyUserByID(id int64) *model.CompanyUser {
+	var user model.CompanyUser
+	err := initialize.DB.Where("id = ?", id).First(&user).Error
+	if err != nil {
+		return nil
+	}
+	return &user
+}

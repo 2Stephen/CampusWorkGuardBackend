@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-type ProfileInfo struct {
+type StudentProfileInfo struct {
 	AvatarURL     string `json:"avatar_url"`
 	StudentID     string `json:"student_id"`
 	Email         string `json:"email"`
@@ -64,7 +64,7 @@ func containsLetter(s string) bool {
 	return false
 }
 
-func GetStudentUserProfileInfoService(userID int) (*ProfileInfo, error) {
+func GetStudentUserProfileInfoService(userID int) (*StudentProfileInfo, error) {
 	user := repository.GetStudentUserByID(int64(userID))
 	if user == nil {
 		return nil, errors.New("用户不存在")
@@ -74,7 +74,7 @@ func GetStudentUserProfileInfoService(userID int) (*ProfileInfo, error) {
 		log.Println("Error retrieving student info from CHSI:", err)
 		return nil, err
 	}
-	profileInfo := &ProfileInfo{
+	profileInfo := &StudentProfileInfo{
 		AvatarURL:     user.AvatarURL,
 		StudentID:     user.StudentId,
 		Email:         user.Email,
