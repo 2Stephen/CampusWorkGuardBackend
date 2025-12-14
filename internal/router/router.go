@@ -38,17 +38,20 @@ func SetupRouter() *gin.Engine {
 		{
 			studentUser.POST("/submit", controllers.SubmitJobController)
 			studentUser.POST("/set_password", controllers.SetStudentUserPasswordController)
+			studentUser.GET("/profile_info", controllers.GetStudentUserProfileInfoController)
 		}
 		companyUser := api.Group("/company_user")
 		companyUser.Use(middlewares.TokenAuthRequired)
 		{
 			companyUser.POST("set_password", controllers.SetCompanyUserPasswordController)
 			companyUser.GET("delete", controllers.DeleteCompanyUserController)
+			companyUser.GET("/profile_info", controllers.GetCompanyUserProfileInfoController)
 		}
 		home := api.Group("/home")
 		home.Use(middlewares.TokenAuthRequired)
 		{
 			home.GET("/static_info", controllers.GetHomeStaticInfoController)
+			home.POST("upload_avatar", controllers.UploadAvatarController)
 		}
 	}
 	return r

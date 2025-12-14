@@ -5,7 +5,15 @@ import (
 	"CampusWorkGuardBackend/internal/repository"
 	"CampusWorkGuardBackend/internal/utils"
 	"errors"
+	"log"
 )
+
+type CompanyProfileInfo struct {
+	AvatarURL string `json:"avatar_url"`
+	Email     string `json:"email"`
+	Name      string `json:"name"`
+	Company   string `json:"company"`
+}
 
 func SetCompanyUserPassword(params dto.SetCompanyUserPasswordParams, userID string) error {
 	// 校验密码长度、复杂度等
@@ -28,4 +36,19 @@ func SetCompanyUserPassword(params dto.SetCompanyUserPasswordParams, userID stri
 
 func DeleteCompanyUserService(id int) error {
 	return repository.DeleteCompanyUserByID(int64(id))
+}
+
+func GetCompanyUserProfileInfoService(userID int) (*CompanyProfileInfo, error) {
+	user := repository.GetCompanyUserByID(int64(userID))
+	if user == nil {
+		log.Println("用户不存在，ID:", userID)
+		return nil, errors.New("用户不存在")
+	}
+	profileInfo := &CompanyProfileInfo{
+		AvatarURL: user.AvatarURL,
+		Email:     user.Email,
+		Name:      user.Name,
+		Company:   user.Company,
+	}
+	return profileInfo, nil
 }

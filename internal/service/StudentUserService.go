@@ -5,7 +5,27 @@ import (
 	"CampusWorkGuardBackend/internal/repository"
 	"CampusWorkGuardBackend/internal/utils"
 	"errors"
+	"log"
 )
+
+type StudentProfileInfo struct {
+	AvatarURL     string `json:"avatar_url"`
+	StudentID     string `json:"student_id"`
+	Email         string `json:"email"`
+	Name          string `json:"name"`
+	Gender        string `json:"gender"`
+	Birthday      string `json:"birthday"`
+	Nation        string `json:"nation"`
+	School        string `json:"school"`
+	Level         string `json:"level"`
+	Major         string `json:"major"`
+	Duration      string `json:"duration"`
+	College       string `json:"college"`
+	Department    string `json:"department"`
+	Entrance_date string `json:"entrance_date"`
+	Status        string `json:"status"`
+	ExpectedGrad  string `json:"expected_grad"`
+}
 
 func SetStudentUserPassword(params dto.SetStudentUserPasswordParams, userId string) error {
 	// 校验密码长度、复杂度等
@@ -42,4 +62,35 @@ func containsLetter(s string) bool {
 		}
 	}
 	return false
+}
+
+func GetStudentUserProfileInfoService(userID int) (*StudentProfileInfo, error) {
+	user := repository.GetStudentUserByID(int64(userID))
+	if user == nil {
+		return nil, errors.New("用户不存在")
+	}
+	userInfo, err := repository.GetCHSIStudentInfoByEmail(user.Email)
+	if err != nil {
+		log.Println("Error retrieving student info from CHSI:", err)
+		return nil, err
+	}
+	profileInfo := &StudentProfileInfo{
+		AvatarURL:     user.AvatarURL,
+		StudentID:     user.StudentId,
+		Email:         user.Email,
+		Name:          userInfo.Name,
+		Gender:        userInfo.Gender,
+		Birthday:      userInfo.Birthday,
+		Nation:        userInfo.Nation,
+		School:        userInfo.School,
+		Level:         userInfo.Level,
+		Major:         userInfo.Major,
+		Duration:      userInfo.Duration,
+		College:       userInfo.College,
+		Department:    userInfo.Department,
+		Entrance_date: userInfo.EntranceDate,
+		Status:        userInfo.Status,
+		ExpectedGrad:  userInfo.ExpectedGrad,
+	}
+	return profileInfo, nil
 }

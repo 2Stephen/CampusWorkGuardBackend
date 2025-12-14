@@ -40,3 +40,12 @@ func GetHomeStaticInfo(userId int, role string, email string) (*model.HomeStatic
 	info.Role = role
 	return info, nil
 }
+
+func UploadAvatarService(filePath string, userId int, role string) error {
+	if role == "student" {
+		return repository.UpdateStudentUserAvatarURL(filePath, userId)
+	} else if role == "company" {
+		return repository.UpdateCompanyUserAvatarURL(filePath, userId)
+	}
+	return nil
+}
