@@ -46,6 +46,8 @@ func SetupRouter() *gin.Engine {
 			companyUser.POST("set_password", controllers.SetCompanyUserPasswordController)
 			companyUser.GET("delete", controllers.DeleteCompanyUserController)
 			companyUser.GET("/profile_info", controllers.GetCompanyUserProfileInfoController)
+			//companyUser.GET("/job_info", controllers.GetCompanyUserJobInfoController)
+			companyUser.POST("/post_job", controllers.PostJobController)
 		}
 		home := api.Group("/home")
 		home.Use(middlewares.TokenAuthRequired)
