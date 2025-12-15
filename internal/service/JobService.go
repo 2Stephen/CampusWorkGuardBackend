@@ -38,6 +38,8 @@ type JobDetail struct {
 	Shift        string `json:"shift"`
 	Experience   string `json:"experience"`
 	PictureList  string `json:"pictureList"`
+	Status       string `json:"status"`
+	FailInfo     string `json:"failInfo"`
 }
 
 type JobProfileInfo struct {
@@ -167,6 +169,8 @@ func GetCompanyUserJobInfoService(ID int) (*JobDetail, error) {
 		Shift:        info.Shift,
 		Experience:   info.Experience,
 		PictureList:  info.PictureList,
+		FailInfo:     info.FailInfo,
+		Status:       info.Status,
 	}
 	return jobDetail, nil
 }

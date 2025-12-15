@@ -20,4 +20,5 @@ type JobInfo struct {
 	CreatedAt    time.Time `gorm:"autoCreateTime;comment:岗位发布时间" json:"created_at"`
 	Status       string    `gorm:"type:varchar(20);default:pending;comment:审核状态" json:"status"`
 	CompanyID    string    `gorm:"not null;comment:发布公司id" json:"company_id"`
+	FailInfo     string    `gorm:"type:varchar(255);comment:审核失败原因" json:"fail_info"`
 }
