@@ -26,3 +26,25 @@ func AdminLoginController(c *gin.Context) {
 	}
 	response.Success(c, gin.H{"token": token})
 }
+
+func AdminEmailLoginController(c *gin.Context) {
+	var (
+		params dto.AdminEmailLoginRequest
+	)
+	if err := c.ShouldBind(&params); err != nil {
+		log.Println("AdminEmailLoginController ShouldBind error:", err)
+		response.Fail(c, http.StatusBadRequest, "参数绑定失败")
+		return
+	}
+	token, err := service.AdminEmailLoginService(&params)
+	if err != nil {
+		if err.Error() == "邮箱验证码已过期，请重新获取" || err.Error() == "邮箱验证码有误" {
+			response.Fail(c, http.StatusBadRequest, err.Error())
+		} else {
+			log.Println("AdminEmailLoginController AdminEmailLoginService error:", err)
+			response.Fail(c, http.StatusUnauthorized, err.Error())
+		}
+		return
+	}
+	response.Success(c, gin.H{"token": token})
+}

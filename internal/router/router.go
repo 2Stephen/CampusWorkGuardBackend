@@ -34,6 +34,7 @@ func SetupRouter() *gin.Engine {
 			admin := auth.Group("/admin")
 			{
 				admin.POST("/login", controllers.AdminLoginController)
+				admin.POST("/email_login", controllers.AdminEmailLoginController)
 			}
 			auth.POST("/send_code", controllers.SendCodeController)
 		}
