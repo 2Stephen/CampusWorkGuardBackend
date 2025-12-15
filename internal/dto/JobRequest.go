@@ -23,3 +23,20 @@ type GetCompanyUserJobListParams struct {
 	Page     int    `json:"page"`
 	PageSize int    `json:"pageSize"`
 }
+
+type UpdateJobParams struct {
+	Id           int    `json:"id"`
+	Name         string `json:"name"`
+	Type         string `json:"type"`
+	Salary       int    `json:"salary"`
+	SalaryUnit   string `json:"salaryUnit"`
+	SalaryPeriod string `json:"salaryPeriod"`
+	Content      string `json:"content"`
+	Headcount    int    `json:"headcount"`
+	Major        string `json:"major"`
+	Region       string `json:"region"`
+	Address      string `json:"address"`
+	Shift        string `json:"shift"`
+	Experience   string `json:"experience"`
+	PictureList  string `json:"pictureList"`
+}

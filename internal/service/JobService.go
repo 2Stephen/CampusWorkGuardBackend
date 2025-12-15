@@ -91,6 +91,61 @@ func PostJobService(params dto.PostJobParams, userID int, email string) error {
 
 }
 
+func UpdateJobService(params dto.UpdateJobParams, userID int, email string) error {
+	// 检查数据库是否存在当前公司用户
+	user, err := repository.GetCompanyUserById(userID)
+	if err != nil {
+		log.Println("Error retrieving company user:", err)
+		return err
+	}
+	if user == nil {
+		log.Println("Company user not found with ID:", userID)
+		return errors.New("企业用户不存在")
+	}
+	if user.VerifyStatus != "verified" {
+		return errors.New("企业用户未通过认证，无法发布职位")
+	}
+	if user.Email != email {
+		log.Println("Email mismatch for user ID:", userID)
+		return errors.New("用户邮箱与认证邮箱不匹配")
+	}
+	// 检查是否存在当前职位
+	existingJob, err := repository.GetJobByID(params.Id)
+	if err != nil {
+		log.Println("Error retrieving job info:", err)
+		return err
+	}
+	if existingJob.ID == 0 {
+		log.Println("Job not found with ID:", params.Id)
+		return errors.New("职位不存在")
+	}
+	if existingJob.CompanyID != user.SocialCode {
+		log.Println("Unauthorized update attempt for job ID:", params.Id)
+		return errors.New("无权限修改该职位信息")
+	}
+	info := &model.JobInfo{
+		ID:           params.Id,
+		Name:         params.Name,
+		Type:         params.Type,
+		Salary:       params.Salary,
+		SalaryUnit:   params.SalaryUnit,
+		SalaryPeriod: params.SalaryPeriod,
+		Content:      params.Content,
+		Headcount:    params.Headcount,
+		Major:        params.Major,
+		Region:       params.Region,
+		Address:      params.Address,
+		Shift:        params.Shift,
+		Experience:   params.Experience,
+		PictureList:  params.PictureList,
+		CreatedAt:    time.Now(),
+		Status:       "pending",
+		CompanyID:    user.SocialCode,
+	}
+	// 调用存储层存储职位信息
+	return repository.UpdateJobInfo(info)
+}
+
 func GetCompanyUserJobInfoService(ID int) (*JobDetail, error) {
 	info, err := repository.GetJobByID(ID)
 	if err != nil {
