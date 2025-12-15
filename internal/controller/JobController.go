@@ -51,3 +51,25 @@ func PostJobController(c *gin.Context) {
 	}
 	response.Success(c, nil)
 }
+
+func GetCompanyUserJobListController(c *gin.Context) {
+	var (
+		params dto.GetCompanyUserJobListParams
+	)
+	userID, exists := c.Get("userID")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	email, exists := c.Get("email")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	jobList, err := service.GetCompanyUserJobListService(userID.(int), email.(string), params)
+	if err != nil {
+		response.Fail(c, 500, "Failed to get job list: "+err.Error())
+		return
+	}
+	response.Success(c, jobList)
+}

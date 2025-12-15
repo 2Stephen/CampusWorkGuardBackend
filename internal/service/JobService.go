@@ -74,7 +74,7 @@ func PostJobService(params dto.PostJobParams, userID int, email string) error {
 		PictureList:  params.PictureList,
 		CreatedAt:    time.Now(),
 		Status:       "pending",
-		CompanyID:    userID,
+		CompanyID:    user.SocialCode,
 	}
 	// 调用存储层存储职位信息
 	return repository.CreateJobInfo(info)
@@ -104,4 +104,46 @@ func GetCompanyUserJobInfoService(ID int) (*JobDetail, error) {
 		PictureList:  info.PictureList,
 	}
 	return jobDetail, nil
+}
+
+func GetCompanyUserJobListService(userID int, email string, params dto.GetCompanyUserJobListParams) ([]JobDetail, error) {
+	user, err := repository.GetCompanyUserById(userID)
+	if err != nil {
+		log.Println("Error retrieving company user:", err)
+		return nil, err
+	}
+	if user == nil {
+		log.Println("Company user not found with ID:", userID)
+		return nil, errors.New("企业用户不存在")
+	}
+	if user.Email != email {
+		log.Println("Email mismatch for user ID:", userID)
+		return nil, errors.New("用户邮箱与认证邮箱不匹配")
+	}
+	jobInfos, err := repository.GetJobsByCompanyID(user.SocialCode, params)
+	if err != nil {
+		log.Println("Error retrieving job list:", err)
+		return nil, err
+	}
+	var jobDetails []JobDetail
+	for _, info := range jobInfos {
+		jobDetail := JobDetail{
+			Id:           info.ID,
+			Name:         info.Name,
+			Type:         info.Type,
+			Salary:       info.Salary,
+			SalaryUnit:   info.SalaryUnit,
+			SalaryPeriod: info.SalaryPeriod,
+			Content:      info.Content,
+			Headcount:    info.Headcount,
+			Major:        info.Major,
+			Region:       info.Region,
+			Address:      info.Address,
+			Shift:        info.Shift,
+			Experience:   info.Experience,
+			PictureList:  info.PictureList,
+		}
+		jobDetails = append(jobDetails, jobDetail)
+	}
+	return jobDetails, nil
 }

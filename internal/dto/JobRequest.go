@@ -15,3 +15,16 @@ type PostJobParams struct {
 	Experience   string `json:"experience"`
 	PictureList  string `json:"pictureList"`
 }
+
+type GetCompanyUserJobListParams struct {
+	//    name: string
+	//    status: string
+	//    type: string
+	//    page: 第几页，从0开始
+	//    pageSize: 每页size
+	Name     string `json:"name"`
+	Status   string `json:"status"`
+	Type     string `json:"type"`
+	Page     int    `json:"page"`
+	PageSize int    `json:"pageSize"`
+}

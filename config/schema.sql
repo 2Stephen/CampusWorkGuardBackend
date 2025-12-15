@@ -85,6 +85,6 @@ CREATE TABLE IF NOT EXISTS job_infos (
 
     status VARCHAR(20) DEFAULT 'pending' COMMENT '审核状态（pending/approved/rejected）',
 
-    company_id INT NOT NULL COMMENT '发布公司id'
+    company_id VARCHAR(50) NOT NULL COMMENT '发布公司id'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='岗位表';
 

@@ -19,5 +19,5 @@ type JobInfo struct {
 	PictureList  string    `gorm:"type:text;comment:岗位相关图片" json:"picture_list"`
 	CreatedAt    time.Time `gorm:"autoCreateTime;comment:岗位发布时间" json:"created_at"`
 	Status       string    `gorm:"type:varchar(20);default:pending;comment:审核状态" json:"status"`
-	CompanyID    int       `gorm:"not null;comment:发布公司id" json:"company_id"`
+	CompanyID    string    `gorm:"not null;comment:发布公司id" json:"company_id"`
 }
