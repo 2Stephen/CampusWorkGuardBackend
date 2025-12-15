@@ -56,6 +56,10 @@ func GetCompanyUserJobListController(c *gin.Context) {
 	var (
 		params dto.GetCompanyUserJobListParams
 	)
+	if err := c.ShouldBind(&params); err != nil {
+		response.Fail(c, 400, "Invalid request parameters")
+		return
+	}
 	userID, exists := c.Get("userID")
 	if !exists {
 		response.Fail(c, 401, "用户未认证")
@@ -66,10 +70,13 @@ func GetCompanyUserJobListController(c *gin.Context) {
 		response.Fail(c, 401, "用户未认证")
 		return
 	}
-	jobList, err := service.GetCompanyUserJobListService(userID.(int), email.(string), params)
+	jobList, total, err := service.GetCompanyUserJobListService(userID.(int), email.(string), params)
 	if err != nil {
 		response.Fail(c, 500, "Failed to get job list: "+err.Error())
 		return
 	}
-	response.Success(c, jobList)
+	response.Success(c, gin.H{
+		"total": total,
+		"jobs":  jobList,
+	})
 }

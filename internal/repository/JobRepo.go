@@ -16,13 +16,21 @@ func GetJobByID(ID int) (model.JobInfo, error) {
 	return job, err
 }
 
-func GetJobsByCompanyID(companyID string, params dto.GetCompanyUserJobListParams) ([]model.JobInfo, error) {
-	var jobs []model.JobInfo
+func GetJobsByCompanyID(
+	companyID string,
+	params dto.GetCompanyUserJobListParams,
+) ([]model.JobInfo, int64, error) {
 
+	var (
+		jobs  []model.JobInfo
+		total int64
+	)
+
+	// 基础查询
 	db := initialize.DB.Model(&model.JobInfo{}).
 		Where("company_id = ?", companyID)
 
-	// ===== 条件查询（为空不加）=====
+	// ===== 条件查询（空字符串不参与）=====
 	if params.Name != "" {
 		db = db.Where("name LIKE ?", "%"+params.Name+"%")
 	}
@@ -35,9 +43,15 @@ func GetJobsByCompanyID(companyID string, params dto.GetCompanyUserJobListParams
 		db = db.Where("status = ?", params.Status)
 	}
 
-	// ===== 分页 =====
+	// ===== 先查 total =====
+	if err := db.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// ===== 分页参数 =====
 	page := params.Page
 	pageSize := params.PageSize
+
 	if page <= 0 {
 		page = 1
 	}
@@ -47,11 +61,13 @@ func GetJobsByCompanyID(companyID string, params dto.GetCompanyUserJobListParams
 
 	offset := (page - 1) * pageSize
 
-	err := db.
+	// ===== 查询列表 =====
+	if err := db.
 		Order("created_at DESC").
 		Limit(pageSize).
 		Offset(offset).
-		Find(&jobs).Error
-
-	return jobs, err
+		Find(&jobs).Error; err != nil {
+		return nil, 0, err
+	}
+	return jobs, total, nil
 }

@@ -40,6 +40,16 @@ type JobDetail struct {
 	PictureList  string `json:"pictureList"`
 }
 
+type JobProfileInfo struct {
+	Id         int       `json:"id"`
+	Name       string    `json:"name"`
+	Type       string    `json:"type"`
+	Salary     int       `json:"salary"`
+	SalaryUnit string    `json:"salaryUnit"`
+	CreatedAt  time.Time `json:"createdAt"`
+	Status     string    `json:"status"`
+}
+
 func PostJobService(params dto.PostJobParams, userID int, email string) error {
 	// 检查数据库是否存在当前公司用户
 	user, err := repository.GetCompanyUserById(userID)
@@ -106,44 +116,37 @@ func GetCompanyUserJobInfoService(ID int) (*JobDetail, error) {
 	return jobDetail, nil
 }
 
-func GetCompanyUserJobListService(userID int, email string, params dto.GetCompanyUserJobListParams) ([]JobDetail, error) {
+func GetCompanyUserJobListService(userID int, email string, params dto.GetCompanyUserJobListParams) ([]JobProfileInfo, int64, error) {
 	user, err := repository.GetCompanyUserById(userID)
 	if err != nil {
 		log.Println("Error retrieving company user:", err)
-		return nil, err
+		return nil, 0, err
 	}
 	if user == nil {
 		log.Println("Company user not found with ID:", userID)
-		return nil, errors.New("企业用户不存在")
+		return nil, 0, errors.New("企业用户不存在")
 	}
 	if user.Email != email {
 		log.Println("Email mismatch for user ID:", userID)
-		return nil, errors.New("用户邮箱与认证邮箱不匹配")
+		return nil, 0, errors.New("用户邮箱与认证邮箱不匹配")
 	}
-	jobInfos, err := repository.GetJobsByCompanyID(user.SocialCode, params)
+	jobInfos, total, err := repository.GetJobsByCompanyID(user.SocialCode, params)
 	if err != nil {
 		log.Println("Error retrieving job list:", err)
-		return nil, err
+		return nil, 0, err
 	}
-	var jobDetails []JobDetail
+	var jobDetails []JobProfileInfo
 	for _, info := range jobInfos {
-		jobDetail := JobDetail{
-			Id:           info.ID,
-			Name:         info.Name,
-			Type:         info.Type,
-			Salary:       info.Salary,
-			SalaryUnit:   info.SalaryUnit,
-			SalaryPeriod: info.SalaryPeriod,
-			Content:      info.Content,
-			Headcount:    info.Headcount,
-			Major:        info.Major,
-			Region:       info.Region,
-			Address:      info.Address,
-			Shift:        info.Shift,
-			Experience:   info.Experience,
-			PictureList:  info.PictureList,
+		jobDetail := JobProfileInfo{
+			Id:         info.ID,
+			Name:       info.Name,
+			Type:       info.Type,
+			Salary:     info.Salary,
+			SalaryUnit: info.SalaryUnit,
+			CreatedAt:  info.CreatedAt,
+			Status:     info.Status,
 		}
 		jobDetails = append(jobDetails, jobDetail)
 	}
-	return jobDetails, nil
+	return jobDetails, total, nil
 }

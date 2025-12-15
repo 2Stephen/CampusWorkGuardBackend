@@ -17,12 +17,7 @@ type PostJobParams struct {
 }
 
 type GetCompanyUserJobListParams struct {
-	//    name: string
-	//    status: string
-	//    type: string
-	//    page: 第几页，从0开始
-	//    pageSize: 每页size
-	Name     string `json:"name"`
+	Name     string `json:"search"`
 	Status   string `json:"status"`
 	Type     string `json:"type"`
 	Page     int    `json:"page"`

@@ -46,7 +46,7 @@ func SetupRouter() *gin.Engine {
 			companyUser.POST("set_password", controllers.SetCompanyUserPasswordController)
 			companyUser.GET("delete", controllers.DeleteCompanyUserController)
 			companyUser.GET("/profile_info", controllers.GetCompanyUserProfileInfoController)
-			companyUser.GET("/job_info/:id", controllers.GetCompanyUserJobInfoController)
+			companyUser.GET("/job_info", controllers.GetCompanyUserJobInfoController)
 			companyUser.POST("/post_job", controllers.PostJobController)
 			companyUser.POST("/job_list", controllers.GetCompanyUserJobListController)
 		}
