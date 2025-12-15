@@ -58,9 +58,21 @@ func AdminEmailLoginService(params *dto.AdminEmailLoginRequest) (string, error) 
 		return "", errors.New("用户登录失败，检查邮箱或验证码是否正确")
 	}
 	// 生成JWT token
-	token, err := utils.GenerateJWTToken(int(user.ID), user.Email, "admin")
+	token, err := utils.GenerateJWTToken(user.ID, user.Email, "admin")
 	if err != nil {
 		return "", errors.New("生成登录令牌失败")
 	}
 	return token, nil
+}
+
+func SetAdminPasswordService(params *dto.SetAdminPasswordRequest, userID int) error {
+	hashedPassword, err := utils.HashPassword(params.Password)
+	if err != nil {
+		return errors.New("密码加密失败")
+	}
+	err = repository.UpdateAdminUserPasswordByID(int64(userID), hashedPassword)
+	if err != nil {
+		return errors.New("设置密码失败")
+	}
+	return nil
 }

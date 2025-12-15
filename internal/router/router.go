@@ -35,6 +35,7 @@ func SetupRouter() *gin.Engine {
 			{
 				admin.POST("/login", controllers.AdminLoginController)
 				admin.POST("/email_login", controllers.AdminEmailLoginController)
+				admin.POST("/set_password", controllers.SetAdminPasswordController)
 			}
 			auth.POST("/send_code", controllers.SendCodeController)
 		}

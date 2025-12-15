@@ -48,3 +48,26 @@ func AdminEmailLoginController(c *gin.Context) {
 	}
 	response.Success(c, gin.H{"token": token})
 }
+
+func SetAdminPasswordController(c *gin.Context) {
+	var (
+		params dto.SetAdminPasswordRequest
+	)
+	userID, exists := c.Get("userID")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	if err := c.ShouldBind(&params); err != nil {
+		log.Println("SetAdminPasswordController ShouldBind error:", err)
+		response.Fail(c, http.StatusBadRequest, "参数绑定失败")
+		return
+	}
+	err := service.SetAdminPasswordService(&params, userID.(int))
+	if err != nil {
+		log.Println("SetAdminPasswordController SetAdminPasswordService error:", err)
+		response.Fail(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	response.Success(c, nil)
+}

@@ -25,3 +25,7 @@ func GetAdminUserByEmail(email string) (*model.AdminUser, error) {
 	}
 	return &user, nil
 }
+
+func UpdateAdminUserPasswordByID(id int64, hashedPassword string) error {
+	return initialize.DB.Model(&model.AdminUser{}).Where("id = ?", id).Update("password", hashedPassword).Error
+}
