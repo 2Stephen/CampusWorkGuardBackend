@@ -52,4 +52,41 @@ CREATE TABLE IF NOT EXISTS company_users (
    UNIQUE KEY uk_social_code (social_code)
 ) COMMENT='企业用户注册与认证表';
 
+CREATE TABLE IF NOT EXISTS job_infos (
+    id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'id（主键）',
+
+    name VARCHAR(100) NOT NULL COMMENT '岗位名称',
+
+    type VARCHAR(20) NOT NULL COMMENT '岗位类型（part-time/intern/full-time）',
+
+    salary INT NOT NULL COMMENT '薪资标准',
+
+    salary_unit VARCHAR(20) NOT NULL COMMENT '薪资单位（hour/day/month）',
+
+    salary_period VARCHAR(20) NOT NULL COMMENT '薪资发放周期（day/week/month）',
+
+    content TEXT COMMENT '工作内容',
+
+    headcount INT COMMENT '招聘人数',
+
+    major VARCHAR(100) COMMENT '专业要求',
+
+    region VARCHAR(100) COMMENT '工作地点（省/市/区）',
+
+    address VARCHAR(255) COMMENT '详细地址',
+
+    shift VARCHAR(20) COMMENT '工作时段（day/night/shift）',
+
+    experience VARCHAR(20) COMMENT '经验要求（none/<1/1-3/>3）',
+
+    picture_list TEXT COMMENT '岗位相关图片（/xx/xx.jpg;/xx/xx.jpg）',
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '岗位发布时间',
+
+    status VARCHAR(20) DEFAULT 'pending' COMMENT '审核状态（pending/approved/rejected）',
+
+    company_id VARCHAR(50) NOT NULL COMMENT '发布公司id'
+
+    fail_info VARCHAR(255) DEFAULT NULL COMMENT '上次审核失败信息'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='岗位表';
 
