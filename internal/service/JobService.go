@@ -205,3 +205,36 @@ func GetCompanyUserJobListService(userID int, email string, params dto.GetCompan
 	}
 	return jobDetails, total, nil
 }
+
+func DeleteJobService(ID int, userID int, email string) error {
+	// 检查数据库是否存在当前公司用户
+	user, err := repository.GetCompanyUserById(userID)
+	if err != nil {
+		log.Println("Error retrieving company user:", err)
+		return err
+	}
+	if user == nil {
+		log.Println("Company user not found with ID:", userID)
+		return errors.New("企业用户不存在")
+	}
+	if user.Email != email {
+		log.Println("Email mismatch for user ID:", userID)
+		return errors.New("用户邮箱与认证邮箱不匹配")
+	}
+	// 检查是否存在当前职位
+	existingJob, err := repository.GetJobByID(ID)
+	if err != nil {
+		log.Println("Error retrieving job info:", err)
+		return err
+	}
+	if existingJob.ID == 0 {
+		log.Println("Job not found with ID:", ID)
+		return errors.New("职位不存在")
+	}
+	if existingJob.CompanyID != user.SocialCode {
+		log.Println("Unauthorized delete attempt for job ID:", ID)
+		return errors.New("无权限删除该职位信息")
+	}
+	// 调用存储层删除职位信息
+	return repository.DeleteJobByID(int64(ID))
+}

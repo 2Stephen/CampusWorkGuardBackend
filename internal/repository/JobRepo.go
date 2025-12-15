@@ -75,3 +75,7 @@ func GetJobsByCompanyID(
 func UpdateJobInfo(info *model.JobInfo) error {
 	return initialize.DB.Model(&model.JobInfo{}).Where("id = ?", info.ID).Updates(info).Error
 }
+
+func DeleteJobByID(id int64) error {
+	return initialize.DB.Delete(&model.JobInfo{}, id).Error
+}

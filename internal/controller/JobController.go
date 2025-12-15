@@ -112,5 +112,30 @@ func UpdateJobController(c *gin.Context) {
 
 func DeleteJobController(c *gin.Context) {
 	// 鉴权+删除
-
+	id := c.Query("id")
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		response.Fail(c, 400, "Invalid job ID")
+		return
+	}
+	userID, exists := c.Get("userID")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	email, exists := c.Get("email")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	err = service.DeleteJobService(idInt, userID.(int), email.(string))
+	if err != nil {
+		if err.Error() == "企业用户不存在" || err.Error() == "无权限删除该职位信息" || err.Error() == "用户邮箱与认证邮箱不匹配" || err.Error() == "职位不存在" {
+			response.Fail(c, 403, err.Error())
+			return
+		}
+		response.Fail(c, 500, "Failed to delete job: "+err.Error())
+		return
+	}
+	response.Success(c, nil)
 }
