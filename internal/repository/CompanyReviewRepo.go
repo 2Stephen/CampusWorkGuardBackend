@@ -17,7 +17,7 @@ func GetAdminCompanyList(page int, pageSize int, search string, status string) (
 		db = db.Where("company LIKE ?", "%"+search+"%")
 	}
 	if status != "" {
-		db = db.Where("status = ?", status)
+		db = db.Where("verify_status = ?", status)
 	}
 	// ===== 先查 total =====
 	if err := db.Count(&total).Error; err != nil {
@@ -36,4 +36,11 @@ func GetAdminCompanyList(page int, pageSize int, search string, status string) (
 		return nil, 0, err
 	}
 	return companyUsers, total, nil
+}
+
+func ReviewCompany(id int, status string, failInfo string) error {
+	return initialize.DB.Model(&model.CompanyUser{}).Where("id = ?", id).Updates(map[string]interface{}{
+		"verify_status": status,
+		"fail_info":     failInfo,
+	}).Error
 }

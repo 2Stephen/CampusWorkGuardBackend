@@ -26,3 +26,7 @@ func GetAdminCompanyListService(params *dto.CompanyListRequest) ([]model.Company
 	}
 	return companyList, total, nil
 }
+
+func ReviewCompanyService(params *dto.CompanyReviewRequest) error {
+	return repository.ReviewCompany(params.Id, params.Status, params.FailInfo)
+}

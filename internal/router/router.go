@@ -70,6 +70,7 @@ func SetupRouter() *gin.Engine {
 			adminUser.POST("/job_list", controllers.GetAdminJobListController)
 			adminUser.POST("/review_job", controllers.ReviewJobController)
 			adminUser.POST("/company_list", controllers.GetAdminCompanyListController)
+			adminUser.POST("/review_company", controllers.ReviewCompanyController)
 		}
 	}
 	return r
