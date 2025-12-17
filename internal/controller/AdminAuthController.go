@@ -24,7 +24,10 @@ func AdminLoginController(c *gin.Context) {
 		response.Fail(c, http.StatusUnauthorized, err.Error())
 		return
 	}
-	response.Success(c, gin.H{"token": token})
+	response.Success(c, gin.H{
+		"token": token,
+		"role":  "admin",
+	})
 }
 
 func AdminEmailLoginController(c *gin.Context) {
@@ -46,7 +49,10 @@ func AdminEmailLoginController(c *gin.Context) {
 		}
 		return
 	}
-	response.Success(c, gin.H{"token": token})
+	response.Success(c, gin.H{
+		"token": token,
+		"role":  "admin",
+	})
 }
 
 func SetAdminPasswordController(c *gin.Context) {

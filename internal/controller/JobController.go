@@ -141,7 +141,7 @@ func DeleteJobController(c *gin.Context) {
 }
 
 func GetAdminJobListController(c *gin.Context) {
-	var params dto.GetAdminJobListRequest
+	var params dto.GetAdminJobListParams
 	if err := c.ShouldBind(&params); err != nil {
 		response.Fail(c, 400, "参数绑定错误")
 		return
@@ -155,4 +155,18 @@ func GetAdminJobListController(c *gin.Context) {
 		"jobs":  jobs,
 		"total": total,
 	})
+}
+
+func ReviewJobController(c *gin.Context) {
+	var params dto.ReviewJobParams
+	if err := c.ShouldBind(&params); err != nil {
+		response.Fail(c, 400, "参数绑定错误")
+		return
+	}
+	err := service.ReviewJobService(params)
+	if err != nil {
+		response.Fail(c, 500, "审核职位失败: "+err.Error())
+		return
+	}
+	response.Success(c, nil)
 }

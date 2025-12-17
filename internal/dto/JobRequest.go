@@ -41,10 +41,16 @@ type UpdateJobParams struct {
 	PictureList  string `json:"pictureList"`
 }
 
-type GetAdminJobListRequest struct {
+type GetAdminJobListParams struct {
 	Page     int    `json:"page" binding:"required"`
 	PageSize int    `json:"pageSize" binding:"required"`
 	Search   string `json:"search"`
 	Status   string `json:"status"`
 	Type     string `json:"type"`
+}
+
+type ReviewJobParams struct {
+	Id       int    `json:"id" binding:"required"`
+	Status   string `json:"status" binding:"required"`
+	FailInfo string `json:"failInfo"`
 }

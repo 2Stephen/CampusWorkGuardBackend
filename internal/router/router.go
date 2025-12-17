@@ -68,6 +68,7 @@ func SetupRouter() *gin.Engine {
 		{
 			adminUser.POST("/set_password", controllers.SetAdminPasswordController)
 			adminUser.POST("/job_list", controllers.GetAdminJobListController)
+			adminUser.POST("/review_job", controllers.ReviewJobController)
 		}
 	}
 	return r

@@ -80,7 +80,7 @@ func DeleteJobByID(id int64) error {
 	return initialize.DB.Delete(&model.JobInfo{}, id).Error
 }
 
-func GetJobsForAdmin(params dto.GetAdminJobListRequest) ([]model.AdminJobProfileInfo, int64, error) {
+func GetJobsForAdmin(params dto.GetAdminJobListParams) ([]model.AdminJobProfileInfo, int64, error) {
 	var (
 		list  []model.AdminJobProfileInfo
 		total int64
@@ -128,6 +128,7 @@ func GetJobsForAdmin(params dto.GetAdminJobListRequest) ([]model.AdminJobProfile
 			j.type,
 			j.salary,
 			j.status,
+			j.salary_unit,
 			j.created_at,
 			c.company
 		`).
@@ -137,4 +138,14 @@ func GetJobsForAdmin(params dto.GetAdminJobListRequest) ([]model.AdminJobProfile
 		Scan(&list).Error
 
 	return list, total, err
+}
+
+func ReviewJob(ID int, status string, failInfo string) error {
+	// 更新审核状态和失败原因
+	return initialize.DB.Model(&model.JobInfo{}).
+		Where("id = ?", ID).
+		Updates(map[string]interface{}{
+			"status":    status,
+			"fail_info": failInfo,
+		}).Error
 }

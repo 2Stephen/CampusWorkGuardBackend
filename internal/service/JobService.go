@@ -243,11 +243,26 @@ func DeleteJobService(ID int, userID int, email string) error {
 	return repository.DeleteJobByID(int64(ID))
 }
 
-func GetAdminJobListService(params dto.GetAdminJobListRequest) ([]model.AdminJobProfileInfo, int64, error) {
+func GetAdminJobListService(params dto.GetAdminJobListParams) ([]model.AdminJobProfileInfo, int64, error) {
 	jobInfos, total, err := repository.GetJobsForAdmin(params)
 	if err != nil {
 		log.Println("Error retrieving admin job list:", err)
 		return nil, 0, err
 	}
 	return jobInfos, total, nil
+}
+
+func ReviewJobService(params dto.ReviewJobParams) error {
+	// 检查是否存在当前职位
+	existingJob, err := repository.GetJobByID(params.Id)
+	if err != nil {
+		log.Println("Error retrieving job info:", err)
+		return err
+	}
+	if existingJob.ID == 0 {
+		log.Println("Job not found with ID:", params.Id)
+		return errors.New("职位不存在")
+	}
+	// 调用存储层审核职位信息
+	return repository.ReviewJob(params.Id, params.Status, params.FailInfo)
 }

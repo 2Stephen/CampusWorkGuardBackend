@@ -26,7 +26,7 @@ func AdminLoginService(params *dto.AdminLoginRequest) (string, error) {
 		return "", errors.New("用户登录失败，检查用户名或密码是否正确")
 	}
 	// 生成JWT token
-	token, err := utils.GenerateJWTToken(int(user.ID), user.Name, "admin")
+	token, err := utils.GenerateJWTToken(int(user.ID), user.Email, "admin")
 	if err != nil {
 		return "", errors.New("生成登录令牌失败")
 	}
