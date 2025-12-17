@@ -31,6 +31,11 @@ func SetupRouter() *gin.Engine {
 				company.POST("/login", controllers.CompanyLoginController)
 				company.POST("/email_login", controllers.CompanyEmailLoginController)
 			}
+			admin := auth.Group("/admin")
+			{
+				admin.POST("/login", controllers.AdminLoginController)
+				admin.POST("/email_login", controllers.AdminEmailLoginController)
+			}
 			auth.POST("/send_code", controllers.SendCodeController)
 		}
 		studentUser := api.Group("/student_user")
@@ -57,6 +62,15 @@ func SetupRouter() *gin.Engine {
 		{
 			home.GET("/static_info", controllers.GetHomeStaticInfoController)
 			home.POST("upload_avatar", controllers.UploadAvatarController)
+		}
+		adminUser := api.Group("/admin_user")
+		adminUser.Use(middlewares.TokenAuthRequired)
+		{
+			adminUser.POST("/set_password", controllers.SetAdminPasswordController)
+			adminUser.POST("/job_list", controllers.GetAdminJobListController)
+			adminUser.POST("/review_job", controllers.ReviewJobController)
+			adminUser.POST("/company_list", controllers.GetAdminCompanyListController)
+			adminUser.POST("/review_company", controllers.ReviewCompanyController)
 		}
 	}
 	return r

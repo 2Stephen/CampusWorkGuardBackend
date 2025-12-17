@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS company_users (
    password VARCHAR(255) DEFAULT NULL COMMENT '密码（初始为空，可后续修改）',
    avatar_url VARCHAR(255) DEFAULT NULL COMMENT '头像URL（默认头像）',
 
-   verify_status VARCHAR(20) NOT NULL DEFAULT '验证中'
+   verify_status VARCHAR(20) NOT NULL DEFAULT 'pending'
        COMMENT '验证状态：pending/verified/unverified',
 
    fail_info VARCHAR(255) DEFAULT NULL COMMENT '上次验证失败信息',
@@ -90,3 +90,10 @@ CREATE TABLE IF NOT EXISTS job_infos (
     fail_info VARCHAR(255) DEFAULT NULL COMMENT '上次审核失败信息'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='岗位表';
 
+CREATE TABLE IF NOT EXISTS admin_users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) DEFAULT NULL,
+    avatar_url VARCHAR(255) DEFAULT NULL
+);

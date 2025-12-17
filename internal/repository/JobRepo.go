@@ -79,3 +79,73 @@ func UpdateJobInfo(info *model.JobInfo) error {
 func DeleteJobByID(id int64) error {
 	return initialize.DB.Delete(&model.JobInfo{}, id).Error
 }
+
+func GetJobsForAdmin(params dto.GetAdminJobListParams) ([]model.AdminJobProfileInfo, int64, error) {
+	var (
+		list  []model.AdminJobProfileInfo
+		total int64
+	)
+
+	db := initialize.DB.Table("job_infos AS j").
+		Joins("LEFT JOIN company_users AS c ON j.company_id = c.social_code")
+
+	// ===== 条件查询 =====
+	if params.Status != "" {
+		db = db.Where("j.status = ?", params.Status)
+	}
+
+	if params.Type != "" {
+		db = db.Where("j.type = ?", params.Type)
+	}
+
+	// 公司名称关键字查询
+	if params.Search != "" {
+		db = db.Where("c.company LIKE ?", "%"+params.Search+"%")
+	}
+
+	// ===== total =====
+	if err := db.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// ===== 分页 =====
+	page := params.Page
+	size := params.PageSize
+	if page <= 0 {
+		page = 1
+	}
+	if size <= 0 {
+		size = 10
+	}
+
+	offset := (page - 1) * size
+
+	// ===== 查询字段 =====
+	err := db.
+		Select(`
+			j.id,
+			j.name,
+			j.type,
+			j.salary,
+			j.status,
+			j.salary_unit,
+			j.created_at,
+			c.company
+		`).
+		Order("j.created_at DESC").
+		Limit(size).
+		Offset(offset).
+		Scan(&list).Error
+
+	return list, total, err
+}
+
+func ReviewJob(ID int, status string, failInfo string) error {
+	// 更新审核状态和失败原因
+	return initialize.DB.Model(&model.JobInfo{}).
+		Where("id = ?", ID).
+		Updates(map[string]interface{}{
+			"status":    status,
+			"fail_info": failInfo,
+		}).Error
+}

@@ -22,3 +22,14 @@ type JobInfo struct {
 	CompanyID    string    `gorm:"not null;comment:发布公司id" json:"company_id"`
 	FailInfo     string    `gorm:"type:varchar(255);comment:审核失败原因" json:"fail_info"`
 }
+
+type AdminJobProfileInfo struct {
+	Id         int       `json:"id"`
+	Company    string    `json:"company"`
+	Name       string    `json:"name"`
+	Type       string    `json:"type"`
+	Salary     int       `json:"salary"`
+	SalaryUnit string    `json:"salaryUnit"`
+	CreatedAt  time.Time `json:"createdAt"`
+	Status     string    `json:"status"`
+}

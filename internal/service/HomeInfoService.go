@@ -36,6 +36,15 @@ func GetHomeStaticInfo(userId int, role string, email string) (*model.HomeStatic
 			VerifyStatus: companyInfo.VerifyStatus,
 			FailInfo:     companyInfo.FailInfo,
 		}
+	} else if role == "admin" {
+		adminInfo, err := repository.GetAdminUserByEmail(email)
+		if err != nil {
+			return nil, err
+		}
+		info = &model.HomeStaticInfo{
+			AvatarURL: adminInfo.AvatarURL,
+			Name:      adminInfo.Name,
+		}
 	}
 	info.Role = role
 	return info, nil

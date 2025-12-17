@@ -41,7 +41,10 @@ func AuthenticationStudentController(c *gin.Context) {
 	}
 	// 返回认证结果
 	if cHSIStudentInfo != nil {
-		response.Success(c, gin.H{"token": token})
+		response.Success(c, gin.H{
+			"token": token,
+			"role":  "student",
+		})
 	} else {
 		response.Fail(c, 404, "学信网解析失败，请检查学信网验证码")
 	}
@@ -66,7 +69,10 @@ func StudentLoginController(c *gin.Context) {
 		response.Fail(c, 500, "Failed to login: "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"token": token})
+	response.Success(c, gin.H{
+		"token": token,
+		"role":  "student",
+	})
 }
 
 func StudentEmailLoginController(c *gin.Context) {
@@ -88,5 +94,8 @@ func StudentEmailLoginController(c *gin.Context) {
 		response.Fail(c, 500, "Failed to login: "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"token": token})
+	response.Success(c, gin.H{
+		"token": token,
+		"role":  "student",
+	})
 }

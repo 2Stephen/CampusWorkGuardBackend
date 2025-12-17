@@ -29,6 +29,7 @@ func GetHomeStaticInfoController(ctx *gin.Context) {
 	info, err := service.GetHomeStaticInfo(userId.(int), role.(string), email.(string))
 	if err != nil {
 		response.Fail(ctx, 500, "获取个人基本信息失败: "+err.Error())
+		return
 	}
 	response.Success(ctx, info)
 }

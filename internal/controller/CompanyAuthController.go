@@ -55,7 +55,10 @@ func AuthenticationCompanyController(ctx *gin.Context) {
 			return
 		}
 	}
-	response.Success(ctx, gin.H{"token": token})
+	response.Success(ctx, gin.H{
+		"token": token,
+		"role":  "company",
+	})
 }
 
 func CompanyEmailLoginController(c *gin.Context) {
@@ -74,7 +77,10 @@ func CompanyEmailLoginController(c *gin.Context) {
 		response.Fail(c, 500, "Failed to login: "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"token": token})
+	response.Success(c, gin.H{
+		"token": token,
+		"role":  "company",
+	})
 }
 
 func CompanyLoginController(ctx *gin.Context) {
@@ -93,6 +99,9 @@ func CompanyLoginController(ctx *gin.Context) {
 		response.Fail(ctx, http.StatusInternalServerError, "Failed to login: "+err.Error())
 		return
 	}
-	response.Success(ctx, gin.H{"token": token})
+	response.Success(ctx, gin.H{
+		"token": token,
+		"role":  "company",
+	})
 
 }
