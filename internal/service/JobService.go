@@ -242,3 +242,12 @@ func DeleteJobService(ID int, userID int, email string) error {
 	// 调用存储层删除职位信息
 	return repository.DeleteJobByID(int64(ID))
 }
+
+func GetAdminJobListService(params dto.GetAdminJobListRequest) ([]model.AdminJobProfileInfo, int64, error) {
+	jobInfos, total, err := repository.GetJobsForAdmin(params)
+	if err != nil {
+		log.Println("Error retrieving admin job list:", err)
+		return nil, 0, err
+	}
+	return jobInfos, total, nil
+}

@@ -35,7 +35,6 @@ func SetupRouter() *gin.Engine {
 			{
 				admin.POST("/login", controllers.AdminLoginController)
 				admin.POST("/email_login", controllers.AdminEmailLoginController)
-				admin.POST("/set_password", controllers.SetAdminPasswordController)
 			}
 			auth.POST("/send_code", controllers.SendCodeController)
 		}
@@ -63,6 +62,12 @@ func SetupRouter() *gin.Engine {
 		{
 			home.GET("/static_info", controllers.GetHomeStaticInfoController)
 			home.POST("upload_avatar", controllers.UploadAvatarController)
+		}
+		adminUser := api.Group("/admin_user")
+		adminUser.Use(middlewares.TokenAuthRequired)
+		{
+			adminUser.POST("/set_password", controllers.SetAdminPasswordController)
+			adminUser.POST("/job_list", controllers.GetAdminJobListController)
 		}
 	}
 	return r

@@ -40,3 +40,11 @@ type UpdateJobParams struct {
 	Experience   string `json:"experience"`
 	PictureList  string `json:"pictureList"`
 }
+
+type GetAdminJobListRequest struct {
+	Page     int    `json:"page" binding:"required"`
+	PageSize int    `json:"pageSize" binding:"required"`
+	Search   string `json:"search"`
+	Status   string `json:"status"`
+	Type     string `json:"type"`
+}
