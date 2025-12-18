@@ -73,6 +73,8 @@ CREATE TABLE IF NOT EXISTS job_infos (
 
     region VARCHAR(100) COMMENT '工作地点（省/市/区）',
 
+    region_name VARCHAR(100) COMMENT '工作地点名称（省市区全称）',
+
     address VARCHAR(255) COMMENT '详细地址',
 
     shift VARCHAR(20) COMMENT '工作时段（day/night/shift）',
@@ -85,7 +87,7 @@ CREATE TABLE IF NOT EXISTS job_infos (
 
     status VARCHAR(20) DEFAULT 'pending' COMMENT '审核状态（pending/approved/rejected）',
 
-    company_id VARCHAR(50) NOT NULL COMMENT '发布公司id'
+    company_id VARCHAR(50) NOT NULL COMMENT '发布公司id',
 
     fail_info VARCHAR(255) DEFAULT NULL COMMENT '上次审核失败信息'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='岗位表';
@@ -97,3 +99,14 @@ CREATE TABLE IF NOT EXISTS admin_users (
     password VARCHAR(255) DEFAULT NULL,
     avatar_url VARCHAR(255) DEFAULT NULL
 );
+
+CREATE TABLE IF NOT EXISTS job_applications (
+    id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键ID',
+
+    student_id INT NOT NULL COMMENT '学生用户ID',
+
+    job_id INT NOT NULL COMMENT '岗位ID',
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '申请日期'
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='岗位申请表';

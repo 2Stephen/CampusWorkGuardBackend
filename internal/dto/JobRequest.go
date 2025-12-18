@@ -10,6 +10,7 @@ type PostJobParams struct {
 	Headcount    int    `json:"headcount"`
 	Major        string `json:"major"`
 	Region       string `json:"region"`
+	RegionName   string `json:"regionName"`
 	Address      string `json:"address"`
 	Shift        string `json:"shift"`
 	Experience   string `json:"experience"`
@@ -35,6 +36,7 @@ type UpdateJobParams struct {
 	Headcount    int    `json:"headcount"`
 	Major        string `json:"major"`
 	Region       string `json:"region"`
+	RegionName   string `json:"regionName"`
 	Address      string `json:"address"`
 	Shift        string `json:"shift"`
 	Experience   string `json:"experience"`
@@ -53,4 +55,13 @@ type ReviewJobParams struct {
 	Id       int    `json:"id" binding:"required"`
 	Status   string `json:"status" binding:"required"`
 	FailInfo string `json:"failInfo"`
+}
+
+type StudentUserJobMatchListParams struct {
+	Search      string `json:"search"`
+	Region      string `json:"region"`
+	Major       string `json:"major"`
+	SalaryOrder string `json:"salaryOrder"`
+	Page        int    `json:"page"`
+	PageSize    int    `json:"pageSize"`
 }

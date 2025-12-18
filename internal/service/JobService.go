@@ -80,6 +80,7 @@ func PostJobService(params dto.PostJobParams, userID int, email string) error {
 		Headcount:    params.Headcount,
 		Major:        params.Major,
 		Region:       params.Region,
+		RegionName:   params.RegionName,
 		Address:      params.Address,
 		Shift:        params.Shift,
 		Experience:   params.Experience,
@@ -136,6 +137,7 @@ func UpdateJobService(params dto.UpdateJobParams, userID int, email string) erro
 		Headcount:    params.Headcount,
 		Major:        params.Major,
 		Region:       params.Region,
+		RegionName:   params.RegionName,
 		Address:      params.Address,
 		Shift:        params.Shift,
 		Experience:   params.Experience,
@@ -265,4 +267,40 @@ func ReviewJobService(params dto.ReviewJobParams) error {
 	}
 	// 调用存储层审核职位信息
 	return repository.ReviewJob(params.Id, params.Status, params.FailInfo)
+}
+
+func StudentUserJobMatchListService(params dto.StudentUserJobMatchListParams) ([]model.StudentUserJobMatchDetail, int, error) {
+	jobInfo, total, err := repository.GetJobMatchesForStudentUser(params.SalaryOrder, params.Search, params.Region, params.Major, params.Page, params.PageSize)
+	if err != nil {
+		log.Println("Error retrieving student user job match list:", err)
+		return nil, 0, err
+	}
+
+	return jobInfo, total, nil
+}
+
+func StudentUserApplyJobService(userID int, jobID int) error {
+	// 检查是否存在当前职位
+	existingJob, err := repository.GetJobByID(jobID)
+	if err != nil {
+		log.Println("Error retrieving job info:", err)
+		return err
+	}
+	if existingJob.ID == 0 {
+		log.Println("Job not found with ID:", jobID)
+		return errors.New("职位不存在")
+	}
+	// 检查是否已经申请过该职位
+	hasApplied, err := repository.HasStudentUserAppliedJob(userID, jobID)
+	if err != nil {
+		log.Println("Error checking if student user has applied for job:", err)
+		return err
+	}
+	if hasApplied {
+		return errors.New("您已申请过该职位，不能重复申请")
+	}
+	// hc--
+
+	// 调用存储层进行职位申请
+	return repository.CreateStudentUserJobApplication(userID, jobID)
 }
