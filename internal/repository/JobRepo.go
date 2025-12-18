@@ -149,3 +149,68 @@ func ReviewJob(ID int, status string, failInfo string) error {
 			"fail_info": failInfo,
 		}).Error
 }
+
+func GetJobMatchesForStudentUser(order, search, Region, Major string, Page, PageSize int) ([]model.StudentUserJobMatchDetail, int, error) {
+	var (
+		total int64
+		jobs  []model.StudentUserJobMatchDetail
+	)
+
+	db := initialize.DB.Table("job_infos AS j").
+		Joins("LEFT JOIN company_users AS c ON j.company_id = c.social_code")
+
+	// ===== 条件查询 =====
+	if Region != "" {
+		db = db.Where("j.region = ?", Region)
+	}
+
+	if Major != "" && Major != "ANY" {
+		db = db.Where("j.major = ? OR j.major = 'ANY'", Major)
+	}
+
+	db = db.Where("j.status = ?", "approved")
+
+	// 岗位名称关键字查询
+	if search != "" {
+		db = db.Where("j.name LIKE ?", "%"+search+"%")
+	}
+
+	// ===== total =====
+	if err := db.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// ===== 分页 =====
+	if Page <= 0 {
+		Page = 1
+	}
+	if PageSize <= 0 {
+		PageSize = 10
+	}
+
+	offset := (Page - 1) * PageSize
+
+	// ===== 查询字段 =====
+	q := db.Select(`
+		j.id,
+		j.name,
+		j.type,
+		j.salary,
+		j.status,
+		j.salary_unit,
+		j.region,
+		c.company,
+		j.major
+	`)
+	if order == "DESC" {
+		q = q.Order("IF(salary_unit = 'day', salary * 22, salary) DESC")
+	} else if order == "ASC" {
+		q = q.Order("IF(salary_unit = 'day', salary * 22, salary) ASC")
+	} else {
+		q = q.Order("j.created_at DESC")
+	}
+
+	err := q.Limit(PageSize).Offset(offset).Scan(&jobs).Error
+
+	return jobs, int(total), err
+}

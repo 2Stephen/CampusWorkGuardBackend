@@ -266,3 +266,13 @@ func ReviewJobService(params dto.ReviewJobParams) error {
 	// 调用存储层审核职位信息
 	return repository.ReviewJob(params.Id, params.Status, params.FailInfo)
 }
+
+func StudentUserJobMatchListService(params dto.StudentUserJobMatchListParams) ([]model.StudentUserJobMatchDetail, int, error) {
+	jobInfos, total, err := repository.GetJobMatchesForStudentUser(params.SalaryOrder, params.Search, params.Region, params.Major, params.Page, params.PageSize)
+	if err != nil {
+		log.Println("Error retrieving student user job match list:", err)
+		return nil, 0, err
+	}
+
+	return jobInfos, total, nil
+}

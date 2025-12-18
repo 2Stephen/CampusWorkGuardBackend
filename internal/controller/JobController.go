@@ -5,6 +5,7 @@ import (
 	"CampusWorkGuardBackend/internal/model/response"
 	"CampusWorkGuardBackend/internal/service"
 	"github.com/gin-gonic/gin"
+	"log"
 	"strconv"
 )
 
@@ -169,4 +170,22 @@ func ReviewJobController(c *gin.Context) {
 		return
 	}
 	response.Success(c, nil)
+}
+
+func StudentUserJobMatchListController(c *gin.Context) {
+	var params dto.StudentUserJobMatchListParams
+	if err := c.ShouldBind(&params); err != nil {
+		log.Println("Error binding parameters:", err)
+		response.Fail(c, 400, "参数绑定错误")
+		return
+	}
+	jobList, total, err := service.StudentUserJobMatchListService(params)
+	if err != nil {
+		response.Fail(c, 500, "获取职位匹配列表失败: "+err.Error())
+		return
+	}
+	response.Success(c, gin.H{
+		"total": total,
+		"jobs":  jobList,
+	})
 }

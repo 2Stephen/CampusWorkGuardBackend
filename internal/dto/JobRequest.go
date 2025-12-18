@@ -54,3 +54,12 @@ type ReviewJobParams struct {
 	Status   string `json:"status" binding:"required"`
 	FailInfo string `json:"failInfo"`
 }
+
+type StudentUserJobMatchListParams struct {
+	Search      string `json:"search"`
+	Region      string `json:"region"`
+	Major       string `json:"major"`
+	SalaryOrder string `json:"salaryOrder"`
+	Page        int    `json:"page"`
+	PageSize    int    `json:"pageSize"`
+}

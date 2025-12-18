@@ -33,3 +33,14 @@ type AdminJobProfileInfo struct {
 	CreatedAt  time.Time `json:"createdAt"`
 	Status     string    `json:"status"`
 }
+
+type StudentUserJobMatchDetail struct {
+	Id         int    `json:"id"`
+	Company    string `json:"company"`
+	Name       string `json:"name"`
+	Type       string `json:"type"`
+	Salary     int    `json:"salary"`
+	SalaryUnit string `json:"salaryUnit"`
+	Region     string `json:"region"`
+	Major      string `json:"major"`
+}

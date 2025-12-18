@@ -44,6 +44,7 @@ func SetupRouter() *gin.Engine {
 			studentUser.POST("/submit", controllers.SubmitJobController)
 			studentUser.POST("/set_password", controllers.SetStudentUserPasswordController)
 			studentUser.GET("/profile_info", controllers.GetStudentUserProfileInfoController)
+			studentUser.POST("/job_match_list", controllers.StudentUserJobMatchListController)
 		}
 		companyUser := api.Group("/company_user")
 		companyUser.Use(middlewares.TokenAuthRequired)
