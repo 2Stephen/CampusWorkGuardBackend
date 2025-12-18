@@ -4,6 +4,11 @@ import (
 	"CampusWorkGuardBackend/internal/dto"
 	"CampusWorkGuardBackend/internal/initialize"
 	"CampusWorkGuardBackend/internal/model"
+	"errors"
+	"fmt"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+	"time"
 )
 
 func CreateJobInfo(info *model.JobInfo) error {
@@ -174,7 +179,8 @@ func GetJobMatchesForStudentUser(order, search, Region, Major string, Page, Page
 	if search != "" {
 		db = db.Where("j.name LIKE ?", "%"+search+"%")
 	}
-
+	// 查询hc > 0的职位
+	db = db.Where("j.headcount > ?", 0)
 	// ===== total =====
 	if err := db.Count(&total).Error; err != nil {
 		return nil, 0, err
@@ -202,15 +208,70 @@ func GetJobMatchesForStudentUser(order, search, Region, Major string, Page, Page
 		c.company,
 		j.major
 	`)
-	if order == "DESC" {
-		q = q.Order("IF(salary_unit = 'day', salary * 22, salary) DESC")
-	} else if order == "ASC" {
-		q = q.Order("IF(salary_unit = 'day', salary * 22, salary) ASC")
+	// 定义薪资排序逻辑，兼容 day/month/hour 三种单位
+	var salarySortExpr string
+	if order == "DESC" || order == "ASC" {
+		salarySortExpr = fmt.Sprintf(
+			"CASE salary_unit WHEN 'hour' THEN salary * 8 * 22 WHEN 'day' THEN salary * 22 ELSE salary END %s",
+			order,
+		)
+		q = q.Order(salarySortExpr)
 	} else {
+		// 默认按创建时间降序
 		q = q.Order("j.created_at DESC")
 	}
 
 	err := q.Limit(PageSize).Offset(offset).Scan(&jobs).Error
 
 	return jobs, int(total), err
+}
+
+func HasStudentUserAppliedJob(studentID int, jobID int) (bool, error) {
+	var count int64
+	err := initialize.DB.Model(&model.JobApplication{}).
+		Where("student_id = ? AND job_id = ?", studentID, jobID).
+		Count(&count).Error
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
+// CreateStudentUserJobApplication 新增求职申请（事务内扣减岗位招聘人数）
+func CreateStudentUserJobApplication(studentID int, jobID int) error {
+	// 开启GORM事务，封装两张表操作
+	return initialize.DB.Transaction(func(tx *gorm.DB) error {
+		// 步骤1：查询岗位信息并加悲观锁，防止并发扣减导致超招
+		var jobInfo model.JobInfo
+		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}). // 加行锁，避免并发问题
+										Where("id = ?", jobID).First(&jobInfo).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return errors.New("岗位不存在")
+			}
+			return err // 其他查询错误，触发事务回滚
+		}
+
+		// 步骤2：校验招聘人数（不能为负）
+		if jobInfo.Headcount <= 0 {
+			return errors.New("该岗位招聘人数已用尽，无法申请")
+		}
+
+		// 步骤3：扣减岗位招聘人数（headcount--）
+		if err := tx.Model(&jobInfo).Update("headcount", gorm.Expr("headcount - ?", 1)).Error; err != nil {
+			return err // 扣减失败，触发回滚
+		}
+
+		// 步骤4：插入求职申请记录
+		application := model.JobApplication{
+			JobID:     jobID,
+			StudentID: studentID,
+			CreatedAt: time.Now(),
+		}
+		if err := tx.Create(&application).Error; err != nil {
+			return err // 插入失败，触发回滚
+		}
+
+		// 所有操作成功，返回nil触发事务提交
+		return nil
+	})
 }

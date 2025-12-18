@@ -24,6 +24,13 @@ type JobInfo struct {
 	FailInfo     string    `gorm:"type:varchar(255);comment:审核失败原因" json:"fail_info"`
 }
 
+type JobApplication struct {
+	ID        int       `gorm:"primaryKey;autoIncrement;comment:id（主键）" json:"id"`
+	JobID     int       `gorm:"not null;comment:职位ID" json:"job_id"`
+	StudentID int       `gorm:"not null;comment:学生用户ID" json:"student_id"`
+	CreatedAt time.Time `gorm:"autoCreateTime;comment:申请时间" json:"created_at"`
+}
+
 type AdminJobProfileInfo struct {
 	Id         int       `json:"id"`
 	Company    string    `json:"company"`

@@ -278,3 +278,29 @@ func StudentUserJobMatchListService(params dto.StudentUserJobMatchListParams) ([
 
 	return jobInfo, total, nil
 }
+
+func StudentUserApplyJobService(userID int, jobID int) error {
+	// 检查是否存在当前职位
+	existingJob, err := repository.GetJobByID(jobID)
+	if err != nil {
+		log.Println("Error retrieving job info:", err)
+		return err
+	}
+	if existingJob.ID == 0 {
+		log.Println("Job not found with ID:", jobID)
+		return errors.New("职位不存在")
+	}
+	// 检查是否已经申请过该职位
+	hasApplied, err := repository.HasStudentUserAppliedJob(userID, jobID)
+	if err != nil {
+		log.Println("Error checking if student user has applied for job:", err)
+		return err
+	}
+	if hasApplied {
+		return errors.New("您已申请过该职位，不能重复申请")
+	}
+	// hc--
+
+	// 调用存储层进行职位申请
+	return repository.CreateStudentUserJobApplication(userID, jobID)
+}

@@ -189,3 +189,27 @@ func StudentUserJobMatchListController(c *gin.Context) {
 		"jobs":  jobList,
 	})
 }
+
+func StudentUserApplyJobController(c *gin.Context) {
+	id := c.Query("id")
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		response.Fail(c, 400, "Invalid job ID")
+		return
+	}
+	userID, exists := c.Get("userID")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	err = service.StudentUserApplyJobService(userID.(int), idInt)
+	if err != nil {
+		if err.Error() == "职位不存在" || err.Error() == "您已申请该职位，不能重复申请" {
+			response.Fail(c, 403, err.Error())
+			return
+		}
+		response.Fail(c, 500, "申请职位失败: "+err.Error())
+		return
+	}
+	response.Success(c, nil)
+}
