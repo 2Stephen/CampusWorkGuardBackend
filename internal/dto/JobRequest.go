@@ -10,6 +10,7 @@ type PostJobParams struct {
 	Headcount    int    `json:"headcount"`
 	Major        string `json:"major"`
 	Region       string `json:"region"`
+	RegionName   string `json:"regionName"`
 	Address      string `json:"address"`
 	Shift        string `json:"shift"`
 	Experience   string `json:"experience"`
@@ -35,6 +36,7 @@ type UpdateJobParams struct {
 	Headcount    int    `json:"headcount"`
 	Major        string `json:"major"`
 	Region       string `json:"region"`
+	RegionName   string `json:"regionName"`
 	Address      string `json:"address"`
 	Shift        string `json:"shift"`
 	Experience   string `json:"experience"`

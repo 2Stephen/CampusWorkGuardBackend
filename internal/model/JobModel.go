@@ -13,6 +13,7 @@ type JobInfo struct {
 	Headcount    int       `gorm:"comment:招聘人数" json:"headcount"`
 	Major        string    `gorm:"type:varchar(100);comment:专业要求" json:"major"`
 	Region       string    `gorm:"type:varchar(100);comment:工作地点" json:"region"`
+	RegionName   string    `gorm:"type:varchar(100);comment:工作地点名称" json:"region_name"`
 	Address      string    `gorm:"type:varchar(255);comment:详细地址" json:"address"`
 	Shift        string    `gorm:"type:varchar(20);comment:工作时段" json:"shift"`
 	Experience   string    `gorm:"type:varchar(20);comment:经验要求" json:"experience"`
@@ -41,6 +42,6 @@ type StudentUserJobMatchDetail struct {
 	Type       string `json:"type"`
 	Salary     int    `json:"salary"`
 	SalaryUnit string `json:"salaryUnit"`
-	Region     string `json:"region"`
+	RegionName string `json:"regionName"`
 	Major      string `json:"major"`
 }

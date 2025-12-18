@@ -198,7 +198,7 @@ func GetJobMatchesForStudentUser(order, search, Region, Major string, Page, Page
 		j.salary,
 		j.status,
 		j.salary_unit,
-		j.region,
+		j.region_name,
 		c.company,
 		j.major
 	`)

@@ -80,6 +80,7 @@ func PostJobService(params dto.PostJobParams, userID int, email string) error {
 		Headcount:    params.Headcount,
 		Major:        params.Major,
 		Region:       params.Region,
+		RegionName:   params.RegionName,
 		Address:      params.Address,
 		Shift:        params.Shift,
 		Experience:   params.Experience,
@@ -136,6 +137,7 @@ func UpdateJobService(params dto.UpdateJobParams, userID int, email string) erro
 		Headcount:    params.Headcount,
 		Major:        params.Major,
 		Region:       params.Region,
+		RegionName:   params.RegionName,
 		Address:      params.Address,
 		Shift:        params.Shift,
 		Experience:   params.Experience,
@@ -268,11 +270,11 @@ func ReviewJobService(params dto.ReviewJobParams) error {
 }
 
 func StudentUserJobMatchListService(params dto.StudentUserJobMatchListParams) ([]model.StudentUserJobMatchDetail, int, error) {
-	jobInfos, total, err := repository.GetJobMatchesForStudentUser(params.SalaryOrder, params.Search, params.Region, params.Major, params.Page, params.PageSize)
+	jobInfo, total, err := repository.GetJobMatchesForStudentUser(params.SalaryOrder, params.Search, params.Region, params.Major, params.Page, params.PageSize)
 	if err != nil {
 		log.Println("Error retrieving student user job match list:", err)
 		return nil, 0, err
 	}
 
-	return jobInfos, total, nil
+	return jobInfo, total, nil
 }

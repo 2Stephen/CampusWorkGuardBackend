@@ -73,6 +73,8 @@ CREATE TABLE IF NOT EXISTS job_infos (
 
     region VARCHAR(100) COMMENT '工作地点（省/市/区）',
 
+    region_name VARCHAR(100) COMMENT '工作地点名称（省市区全称）',
+
     address VARCHAR(255) COMMENT '详细地址',
 
     shift VARCHAR(20) COMMENT '工作时段（day/night/shift）',
