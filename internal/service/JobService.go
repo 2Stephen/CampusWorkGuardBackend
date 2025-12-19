@@ -304,3 +304,55 @@ func StudentUserApplyJobService(userID int, jobID int) error {
 	// 调用存储层进行职位申请
 	return repository.CreateStudentUserJobApplication(userID, jobID)
 }
+
+func GetJobApplicationListService(userID int, params dto.GetJobApplicationListParams) ([]model.JobApplicationProfileInfo, int64, error) {
+	// 获取当前用户所在公司的社会信用代码
+	user, err := repository.GetCompanyUserById(userID)
+	if err != nil {
+		log.Println("Error retrieving company user:", err)
+		return nil, 0, err
+	}
+	if user == nil {
+		log.Println("Company user not found with ID:", userID)
+		return nil, 0, errors.New("企业用户不存在")
+	}
+	jobApplications, total, err := repository.GetJobApplicationsByCompanySocialCode(user.SocialCode, params)
+	if err != nil {
+		log.Println("Error retrieving job application list:", err)
+		return nil, 0, err
+	}
+	for i := range jobApplications {
+		app := &jobApplications[i]
+		switch app.SalaryUnit {
+		case "hour":
+			switch app.SalaryPeriod {
+			case "day":
+				app.Total = app.Salary * 8
+			case "week":
+				app.Total = app.Salary * 8 * 7
+			case "month":
+				app.Total = app.Salary * 8 * 22
+			}
+		case "day":
+			switch app.SalaryPeriod {
+			case "day":
+				app.Total = app.Salary
+			case "week":
+				app.Total = app.Salary * 7
+			case "month":
+				app.Total = app.Salary * 22
+			}
+		case "month":
+			switch app.SalaryPeriod {
+			case "day":
+				app.Total = app.Salary / 22
+			case "week":
+				app.Total = app.Salary / 4
+			case "month":
+				app.Total = app.Salary
+			}
+		}
+		app.Total /= 2
+	}
+	return jobApplications, total, nil
+}

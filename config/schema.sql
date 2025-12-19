@@ -107,6 +107,10 @@ CREATE TABLE IF NOT EXISTS job_applications (
 
     job_id INT NOT NULL COMMENT '岗位ID',
 
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '申请日期'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '申请日期',
+
+    status VARCHAR(20) DEFAULT NULL COMMENT '状态（未缴纳unpaid，工作进行中ongoing，工作完成completed，履约完成appointment）',
+
+    payment INT DEFAULT NULL COMMENT '支付金额'
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='岗位申请表';

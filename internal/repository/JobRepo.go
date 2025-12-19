@@ -275,3 +275,61 @@ func CreateStudentUserJobApplication(studentID int, jobID int) error {
 		return nil
 	})
 }
+
+func GetJobApplicationsByCompanySocialCode(socialCode string, params dto.GetJobApplicationListParams) ([]model.JobApplicationProfileInfo, int64, error) {
+	var (
+		list  []model.JobApplicationProfileInfo
+		total int64
+	)
+
+	db := initialize.DB.Table("job_applications AS ja").
+		Joins("LEFT JOIN job_infos AS j ON ja.job_id = j.id").
+		Joins("LEFT JOIN student_users AS s ON ja.student_id = s.id").
+		Joins("LEFT JOIN chsi_student_infos AS c ON s.email = c.email").
+		Where("j.company_id = ?", socialCode)
+
+	// ===== 条件查询 =====
+	if params.Status != "" {
+		db = db.Where("ja.status = ?", params.Status)
+	}
+
+	if params.Search != "" {
+		db = db.Where("j.name LIKE ?", "%"+params.Search+"%")
+	}
+	// ===== total =====
+	if err := db.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// ===== 分页 =====
+	page := params.Page
+	size := params.PageSize
+	if page <= 0 {
+		page = 1
+	}
+	if size <= 0 {
+		size = 10
+	}
+	offset := (page - 1) * size
+
+	// ===== 查询字段 =====
+	err := db.
+		Select(`
+			ja.id,
+			j.name,
+			c.name AS student_name,
+			s.student_id,
+			c.major AS student_major,
+			j.major,
+			j.salary,
+			j.salary_unit,
+			j.salary_period,
+			ja.status
+		`).
+		Order("ja.created_at DESC").
+		Limit(size).
+		Offset(offset).
+		Scan(&list).Error
+
+	return list, total, err
+}

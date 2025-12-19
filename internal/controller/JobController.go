@@ -213,3 +213,33 @@ func StudentUserApplyJobController(c *gin.Context) {
 	}
 	response.Success(c, nil)
 }
+
+func GetJobApplicationListController(c *gin.Context) {
+	var params dto.GetJobApplicationListParams
+	if err := c.ShouldBind(&params); err != nil {
+		response.Fail(c, 400, "参数绑定错误")
+		return
+	}
+	userID, exists := c.Get("userID")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	list, total, err := service.GetJobApplicationListService(userID.(int), params)
+	if err != nil {
+		response.Fail(c, 500, "获取职位申请列表失败: "+err.Error())
+		return
+	}
+	response.Success(c, gin.H{
+		"total":        total,
+		"applications": list,
+	})
+}
+
+//func PayDepositController(c *gin.Context) {
+//	//var params dto.PayDepositParams
+//	if err := c.ShouldBind(&params); err != nil {
+//		response.Fail(c, 400, "参数绑定错误")
+//		return
+//	}
+//}

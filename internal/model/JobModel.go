@@ -29,6 +29,8 @@ type JobApplication struct {
 	JobID     int       `gorm:"not null;comment:职位ID" json:"job_id"`
 	StudentID int       `gorm:"not null;comment:学生用户ID" json:"student_id"`
 	CreatedAt time.Time `gorm:"autoCreateTime;comment:申请时间" json:"created_at"`
+	Status    string    `gorm:"type:varchar(20);default:pending;comment:申请状态" json:"status"`
+	Payment   int       `gorm:"comment:薪资待遇" json:"payment"`
 }
 
 type AdminJobProfileInfo struct {
@@ -51,4 +53,18 @@ type StudentUserJobMatchDetail struct {
 	SalaryUnit string `json:"salaryUnit"`
 	RegionName string `json:"regionName"`
 	Major      string `json:"major"`
+}
+
+type JobApplicationProfileInfo struct {
+	Id           int    `json:"id"`
+	Name         string `json:"name"`
+	Major        string `json:"major"`
+	StudentName  string `json:"studentName"`
+	StudentId    string `json:"studentId"`
+	StudentMajor string `json:"studentMajor"`
+	Salary       int    `json:"salary"`
+	SalaryUnit   string `json:"salaryUnit"`
+	Total        int    `json:"total"`
+	SalaryPeriod string `json:"salaryPeriod"`
+	Status       string `json:"status"`
 }

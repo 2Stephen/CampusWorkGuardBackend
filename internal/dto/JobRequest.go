@@ -65,3 +65,10 @@ type StudentUserJobMatchListParams struct {
 	Page        int    `json:"page"`
 	PageSize    int    `json:"pageSize"`
 }
+
+type GetJobApplicationListParams struct {
+	Search   string `json:"search"`
+	Status   string `json:"status"`
+	Page     int    `json:"page"`
+	PageSize int    `json:"pageSize"`
+}
