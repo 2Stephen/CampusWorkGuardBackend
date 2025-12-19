@@ -304,3 +304,107 @@ func StudentUserApplyJobService(userID int, jobID int) error {
 	// 调用存储层进行职位申请
 	return repository.CreateStudentUserJobApplication(userID, jobID)
 }
+
+func GetJobApplicationListService(userID int, params dto.GetJobApplicationListParams) ([]model.JobApplicationProfileInfo, int64, error) {
+	// 获取当前用户所在公司的社会信用代码
+	user, err := repository.GetCompanyUserById(userID)
+	if err != nil {
+		log.Println("Error retrieving company user:", err)
+		return nil, 0, err
+	}
+	if user == nil {
+		log.Println("Company user not found with ID:", userID)
+		return nil, 0, errors.New("企业用户不存在")
+	}
+	jobApplications, total, err := repository.GetJobApplicationsByCompanySocialCode(user.SocialCode, params)
+	if err != nil {
+		log.Println("Error retrieving job application list:", err)
+		return nil, 0, err
+	}
+	for i := range jobApplications {
+		app := &jobApplications[i]
+		switch app.SalaryUnit {
+		case "hour":
+			switch app.SalaryPeriod {
+			case "day":
+				app.Total = app.Salary * 8
+			case "week":
+				app.Total = app.Salary * 8 * 7
+			case "month":
+				app.Total = app.Salary * 8 * 22
+			}
+		case "day":
+			switch app.SalaryPeriod {
+			case "day":
+				app.Total = app.Salary
+			case "week":
+				app.Total = app.Salary * 7
+			case "month":
+				app.Total = app.Salary * 22
+			}
+		case "month":
+			switch app.SalaryPeriod {
+			case "day":
+				app.Total = app.Salary / 22
+			case "week":
+				app.Total = app.Salary / 4
+			case "month":
+				app.Total = app.Salary
+			}
+		}
+		app.Total /= 2
+	}
+	return jobApplications, total, nil
+}
+
+func PayDepositService(userID int, params dto.PayDepositParams) error {
+	// 检查数据库是否存在当前公司用户
+	user, err := repository.GetCompanyUserById(userID)
+	if err != nil {
+		log.Println("Error retrieving company user:", err)
+		return err
+	}
+	if user == nil {
+		log.Println("Company user not found with ID:", userID)
+		return errors.New("企业用户不存在")
+	}
+	// 检查是否存在当前职位
+	//existingJob, err := repository.GetJobByID(params.JobId)
+	//if err != nil {
+	//	log.Println("Error retrieving job info:", err)
+	//	return err
+	//}
+	//if existingJob.ID == 0 {
+	//	log.Println("Job not found with ID:", params.JobId)
+	//	return errors.New("职位不存在")
+	//}
+	//if existingJob.CompanyID != user.SocialCode {
+	//	log.Println("Unauthorized deposit payment attempt for job ID:", params.JobId)
+	//	return errors.New("无权限为该职位支付押金")
+	//}
+	// 检查是否已经支付过押金
+	jobApplication, err := repository.GetJobApplicationByID(params.JobId)
+	if err != nil {
+		log.Println("Error retrieving job application info:", err)
+		return errors.New("获取职位申请信息失败")
+	}
+	if jobApplication.ID != 0 && jobApplication.Status == "unpaid" {
+		// 调用存储层支付押金
+		return repository.PayDeposit(params.JobId, params.Deposit)
+	}
+	if jobApplication.ID != 0 && jobApplication.Status == "completed" {
+		// 支付结余
+		payment := params.Deposit + jobApplication.Payment
+		return repository.PayRemainingDeposit(params.JobId, payment)
+	}
+	return errors.New("押金已支付，无需重复支付")
+}
+
+func GetAdminJobApplicationListService(params dto.GetAdminJobApplicationListParams) ([]model.AdminJobApplicationDetail, int64, error) {
+	jobApplications, total, err := repository.GetJobApplicationsForAdmin(params)
+	if err != nil {
+		log.Println("Error retrieving admin job application list:", err)
+		return nil, 0, err
+	}
+	return jobApplications, total, nil
+}

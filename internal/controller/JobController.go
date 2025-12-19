@@ -213,3 +213,65 @@ func StudentUserApplyJobController(c *gin.Context) {
 	}
 	response.Success(c, nil)
 }
+
+func GetJobApplicationListController(c *gin.Context) {
+	var params dto.GetJobApplicationListParams
+	if err := c.ShouldBind(&params); err != nil {
+		response.Fail(c, 400, "参数绑定错误")
+		return
+	}
+	userID, exists := c.Get("userID")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	list, total, err := service.GetJobApplicationListService(userID.(int), params)
+	if err != nil {
+		response.Fail(c, 500, "获取职位申请列表失败: "+err.Error())
+		return
+	}
+	response.Success(c, gin.H{
+		"total":        total,
+		"applications": list,
+	})
+}
+
+func PayDepositController(c *gin.Context) {
+	var params dto.PayDepositParams
+	if err := c.ShouldBind(&params); err != nil {
+		response.Fail(c, 400, "参数绑定错误")
+		return
+	}
+	userID, exists := c.Get("userID")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	err := service.PayDepositService(userID.(int), params)
+	if err != nil {
+		if err.Error() == "企业用户不存在" || err.Error() == "职位不存在" || err.Error() == "无权限为该职位支付押金" || err.Error() == "押金已支付，无需重复支付" {
+			response.Fail(c, 403, err.Error())
+			return
+		}
+		response.Fail(c, 500, "支付押金失败: "+err.Error())
+		return
+	}
+	response.Success(c, nil)
+}
+
+func GetAdminJobApplicationListController(c *gin.Context) {
+	var params dto.GetAdminJobApplicationListParams
+	if err := c.ShouldBind(&params); err != nil {
+		response.Fail(c, 400, "参数绑定错误")
+		return
+	}
+	applications, total, err := service.GetAdminJobApplicationListService(params)
+	if err != nil {
+		response.Fail(c, 500, "获取管理员职位申请列表失败")
+		return
+	}
+	response.Success(c, gin.H{
+		"applications": applications,
+		"total":        total,
+	})
+}
