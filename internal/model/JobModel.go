@@ -68,3 +68,18 @@ type JobApplicationProfileInfo struct {
 	SalaryPeriod string `json:"salaryPeriod"`
 	Status       string `json:"status"`
 }
+
+type AdminJobApplicationDetail struct {
+	Id           int    `json:"id"`
+	Company      string `json:"company"`
+	Name         string `json:"name"`
+	Major        string `json:"major"`
+	StudentName  string `json:"studentName"`
+	StudentId    string `json:"studentId"`
+	StudentMajor string `json:"studentMajor"`
+	Salary       int    `json:"salary"`
+	Total        int    `json:"total"`
+	SalaryUnit   string `json:"salaryUnit"`
+	SalaryPeriod string `json:"salaryPeriod"`
+	Status       string `json:"status"`
+}

@@ -399,3 +399,12 @@ func PayDepositService(userID int, params dto.PayDepositParams) error {
 	}
 	return errors.New("押金已支付，无需重复支付")
 }
+
+func GetAdminJobApplicationListService(params dto.GetAdminJobApplicationListParams) ([]model.AdminJobApplicationDetail, int64, error) {
+	jobApplications, total, err := repository.GetJobApplicationsForAdmin(params)
+	if err != nil {
+		log.Println("Error retrieving admin job application list:", err)
+		return nil, 0, err
+	}
+	return jobApplications, total, nil
+}

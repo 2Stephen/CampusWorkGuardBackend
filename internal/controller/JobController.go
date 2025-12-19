@@ -258,3 +258,20 @@ func PayDepositController(c *gin.Context) {
 	}
 	response.Success(c, nil)
 }
+
+func GetAdminJobApplicationListController(c *gin.Context) {
+	var params dto.GetAdminJobApplicationListParams
+	if err := c.ShouldBind(&params); err != nil {
+		response.Fail(c, 400, "参数绑定错误")
+		return
+	}
+	applications, total, err := service.GetAdminJobApplicationListService(params)
+	if err != nil {
+		response.Fail(c, 500, "获取管理员职位申请列表失败")
+		return
+	}
+	response.Success(c, gin.H{
+		"applications": applications,
+		"total":        total,
+	})
+}
