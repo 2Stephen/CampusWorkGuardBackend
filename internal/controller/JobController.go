@@ -236,10 +236,25 @@ func GetJobApplicationListController(c *gin.Context) {
 	})
 }
 
-//func PayDepositController(c *gin.Context) {
-//	//var params dto.PayDepositParams
-//	if err := c.ShouldBind(&params); err != nil {
-//		response.Fail(c, 400, "参数绑定错误")
-//		return
-//	}
-//}
+func PayDepositController(c *gin.Context) {
+	var params dto.PayDepositParams
+	if err := c.ShouldBind(&params); err != nil {
+		response.Fail(c, 400, "参数绑定错误")
+		return
+	}
+	userID, exists := c.Get("userID")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	err := service.PayDepositService(userID.(int), params)
+	if err != nil {
+		if err.Error() == "企业用户不存在" || err.Error() == "职位不存在" || err.Error() == "无权限为该职位支付押金" || err.Error() == "押金已支付，无需重复支付" {
+			response.Fail(c, 403, err.Error())
+			return
+		}
+		response.Fail(c, 500, "支付押金失败: "+err.Error())
+		return
+	}
+	response.Success(c, nil)
+}

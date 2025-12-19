@@ -72,3 +72,8 @@ type GetJobApplicationListParams struct {
 	Page     int    `json:"page"`
 	PageSize int    `json:"pageSize"`
 }
+
+type PayDepositParams struct {
+	JobId   int `json:"jobId"`
+	Deposit int `json:"deposit"`
+}

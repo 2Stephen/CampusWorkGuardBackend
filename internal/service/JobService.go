@@ -356,3 +356,46 @@ func GetJobApplicationListService(userID int, params dto.GetJobApplicationListPa
 	}
 	return jobApplications, total, nil
 }
+
+func PayDepositService(userID int, params dto.PayDepositParams) error {
+	// 检查数据库是否存在当前公司用户
+	user, err := repository.GetCompanyUserById(userID)
+	if err != nil {
+		log.Println("Error retrieving company user:", err)
+		return err
+	}
+	if user == nil {
+		log.Println("Company user not found with ID:", userID)
+		return errors.New("企业用户不存在")
+	}
+	// 检查是否存在当前职位
+	//existingJob, err := repository.GetJobByID(params.JobId)
+	//if err != nil {
+	//	log.Println("Error retrieving job info:", err)
+	//	return err
+	//}
+	//if existingJob.ID == 0 {
+	//	log.Println("Job not found with ID:", params.JobId)
+	//	return errors.New("职位不存在")
+	//}
+	//if existingJob.CompanyID != user.SocialCode {
+	//	log.Println("Unauthorized deposit payment attempt for job ID:", params.JobId)
+	//	return errors.New("无权限为该职位支付押金")
+	//}
+	// 检查是否已经支付过押金
+	jobApplication, err := repository.GetJobApplicationByID(params.JobId)
+	if err != nil {
+		log.Println("Error retrieving job application info:", err)
+		return errors.New("获取职位申请信息失败")
+	}
+	if jobApplication.ID != 0 && jobApplication.Status == "unpaid" {
+		// 调用存储层支付押金
+		return repository.PayDeposit(params.JobId, params.Deposit)
+	}
+	if jobApplication.ID != 0 && jobApplication.Status == "completed" {
+		// 支付结余
+		payment := params.Deposit + jobApplication.Payment
+		return repository.PayRemainingDeposit(params.JobId, payment)
+	}
+	return errors.New("押金已支付，无需重复支付")
+}

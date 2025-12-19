@@ -333,3 +333,27 @@ func GetJobApplicationsByCompanySocialCode(socialCode string, params dto.GetJobA
 
 	return list, total, err
 }
+
+func GetJobApplicationByID(id int) (model.JobApplication, error) {
+	var application model.JobApplication
+	err := initialize.DB.Where("id = ?", id).First(&application).Error
+	return application, err
+}
+
+func PayDeposit(jobID int, payment int) error {
+	return initialize.DB.Model(&model.JobInfo{}).
+		Where("id = ?", jobID).
+		Updates(map[string]interface{}{
+			"status":  "ongoing",
+			"payment": payment,
+		}).Error
+}
+
+func PayRemainingDeposit(jobID int, payment int) error {
+	return initialize.DB.Model(&model.JobInfo{}).
+		Where("id = ?", jobID).
+		Updates(map[string]interface{}{
+			"status":  "appointment",
+			"payment": payment,
+		}).Error
+}
