@@ -408,3 +408,12 @@ func GetAdminJobApplicationListService(params dto.GetAdminJobApplicationListPara
 	}
 	return jobApplications, total, nil
 }
+
+func GetStudentUserApplicationListService(userID int) (model.StudentUserApplicationDetail, error) {
+	applications, err := repository.GetJobApplicationsByStudentUserID(userID)
+	if err != nil {
+		log.Println("Error retrieving student user application list:", err)
+		return applications, err
+	}
+	return applications, nil
+}

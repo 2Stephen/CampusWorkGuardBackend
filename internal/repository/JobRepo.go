@@ -418,3 +418,44 @@ func GetJobApplicationsForAdmin(params dto.GetAdminJobApplicationListParams) ([]
 
 	return list, total, err
 }
+
+func GetJobApplicationsByStudentUserID(userID int) (model.StudentUserApplicationDetail, error) {
+	var ans model.StudentUserApplicationDetail
+	err := initialize.DB.Table("job_applications AS ja").
+		Joins("LEFT JOIN job_infos AS j ON ja.job_id = j.id").
+		Joins("LEFT JOIN company_users AS c ON j.company_id = c.social_code").
+		Joins("LEFT JOIN student_users AS su ON ja.student_id = su.id").
+		Joins("LEFT JOIN chsi_student_infos AS csi ON su.email = csi.email").
+		Where("ja.student_id = ?", userID).
+		// {
+		//    "code": 200,
+		//    "message": "",
+		//    "data": {
+		//        "applications": {
+		//            "id": 2,
+		//            "company": "美团",
+		//            "name": "SRE",
+		//            "major": "CS",
+		//            "studentName": "",
+		//            "studentId": "",
+		//            "studentMajor": "",
+		//            "status": "ongoing"
+		//        },
+		//        "total": 1
+		//    }
+		//}
+		Select(`
+			ja.id,
+			j.name,
+			c.company,
+			j.major,
+			csi.name AS student_name,
+			su.student_id,
+			csi.major AS student_major,
+			ja.status
+		`).
+		Order("ja.created_at DESC").
+		Scan(&ans).Error
+	return ans, err
+
+}

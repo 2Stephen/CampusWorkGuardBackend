@@ -2,6 +2,7 @@ package controller
 
 import (
 	"CampusWorkGuardBackend/internal/dto"
+	"CampusWorkGuardBackend/internal/model"
 	"CampusWorkGuardBackend/internal/model/response"
 	"CampusWorkGuardBackend/internal/service"
 	"github.com/gin-gonic/gin"
@@ -273,5 +274,22 @@ func GetAdminJobApplicationListController(c *gin.Context) {
 	response.Success(c, gin.H{
 		"applications": applications,
 		"total":        total,
+	})
+}
+
+func GetStudentUserApplicationListController(c *gin.Context) {
+	userID, exists := c.Get("userID")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	res, err := service.GetStudentUserApplicationListService(userID.(int))
+	if err != nil {
+		response.Fail(c, 500, "获取学生用户申请列表失败: "+err.Error())
+		return
+	}
+	response.Success(c, gin.H{
+		"applications": []model.StudentUserApplicationDetail{res},
+		"total":        1,
 	})
 }
