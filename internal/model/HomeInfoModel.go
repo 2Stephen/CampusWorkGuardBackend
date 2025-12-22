@@ -24,3 +24,8 @@ type JobType struct {
 	Type  string `json:"type"`
 	Value int    `json:"value"`
 }
+
+type AverageSalaryByMajor struct {
+	Major string  `json:"major"`
+	Value float64 `json:"value"`
+}

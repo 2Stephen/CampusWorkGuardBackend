@@ -97,3 +97,12 @@ func GetJobTypesController(ctx *gin.Context) {
 	}
 	response.Success(ctx, types)
 }
+
+func GetAverageSalariesByMajorController(ctx *gin.Context) {
+	avgSalaries, err := service.GetAverageSalariesByMajorService()
+	if err != nil {
+		response.Fail(ctx, 500, "获取各专业平均薪资失败: "+err.Error())
+		return
+	}
+	response.Success(ctx, avgSalaries)
+}
