@@ -84,3 +84,8 @@ type GetAdminJobApplicationListParams struct {
 	Page     int    `json:"page"`
 	PageSize int    `json:"pageSize"`
 }
+
+type StudentUserAttendanceParams struct {
+	JobApplicationId int    `json:"jobApplicationId"`
+	Location         string `json:"location"`
+}

@@ -4,8 +4,13 @@ import (
 	"CampusWorkGuardBackend/internal/dto"
 	"CampusWorkGuardBackend/internal/model"
 	"CampusWorkGuardBackend/internal/repository"
+	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
 	"log"
+	"net/http"
+	"os"
 	"time"
 )
 
@@ -416,4 +421,71 @@ func GetStudentUserApplicationListService(userID int) (model.StudentUserApplicat
 		return applications, err
 	}
 	return applications, nil
+}
+
+func StudentUserAttendanceService(userID int, params dto.StudentUserAttendanceParams) error {
+	var (
+		key     = os.Getenv("AMAP_KEY")
+		baseURL = "https://restapi.amap.com/v3/geocode/regeo?"
+	)
+	// 检查是否存在当前职位申请
+	application, err := repository.GetJobApplicationByID(params.JobApplicationId)
+	if err != nil {
+		log.Println("Error retrieving job application info:", err)
+		return err
+	}
+	if application.ID == 0 || application.StudentID != userID {
+		log.Println("Job application not found or does not belong to user:", params.JobApplicationId)
+		return errors.New("未找到对应的工作申请")
+	}
+	// 根据坐标获取地址
+	if key == "" {
+		return errors.New("请先设置环境变量 AMAP_KEY")
+	}
+	if params.Location == "" {
+		return errors.New("考勤地点不能为空")
+	}
+	// 拼接 URL
+	// //restapi.amap.com/v3/geocode/regeo?key=您的key&location=114.32893431041502,30.51517932657682&poitype=&radius=35&extensions=base&roadlevel=0
+	url := fmt.Sprintf("%skey=%s&location=%s&radius=35&extensions=base&roadlevel=0", baseURL, key, params.Location)
+	// 发送 HTTP GET 请求
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println("关闭响应体错误：", err)
+		}
+	}(resp.Body)
+
+	// 读取响应
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	type Resp struct {
+		Status    string `json:"status"`
+		Regeocode struct {
+			FormattedAddress string `json:"formatted_address"`
+		} `json:"regeocode"`
+		Info     string `json:"info"`
+		Infocode string `json:"infocode"`
+	}
+	// 解析 JSON
+	var data Resp
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return err
+	}
+
+	// 处理返回结果
+	if data.Status != "1" {
+		return fmt.Errorf("请求失败: %s", data.Info)
+	}
+	params.Location = data.Regeocode.FormattedAddress
+	// 签到
+	return repository.StudentUserAttendance(params)
 }

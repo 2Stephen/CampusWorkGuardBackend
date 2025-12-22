@@ -114,3 +114,11 @@ CREATE TABLE IF NOT EXISTS job_applications (
     payment INT DEFAULT NULL COMMENT '支付金额'
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='岗位申请表';
+
+CREATE TABLE IF NOT EXISTS `attendance_records` (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT '主键id',
+  `job_application_id` int(11) NOT NULL COMMENT 'job_applications表数据库主键编号（jobid+studentid确定）',
+  `attendance_date` varchar(64) NOT NULL COMMENT '打卡日期（优化为date类型，贴合日期场景；若需含时分秒可改用datetime）',
+  `location` varchar(500) DEFAULT NULL COMMENT '打卡地点（支持详细地址/坐标，长度适配高德地址返回）',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='应聘打卡记录表';

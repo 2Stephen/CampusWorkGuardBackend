@@ -94,3 +94,14 @@ type StudentUserApplicationDetail struct {
 	StudentMajor string `json:"studentMajor"`
 	Status       string `json:"status"`
 }
+
+type AttendanceRecord struct {
+	// 主键字段
+	ID int `gorm:"column:id;type:int;primaryKey;autoIncrement;comment:主键id" json:"id"`
+	// 关联job_applications表的主键
+	JobApplicationID int `gorm:"column:job_application_id;type:int;not null;comment:job_applications表数据库主键编号（jobid+studentid确定）" json:"job_application_id"`
+	// 打卡日期（注：SQL中用了varchar(64)，结构体对应string类型）
+	AttendanceDate string `gorm:"column:attendance_date;type:varchar(64);not null;comment:打卡日期（优化为date类型，贴合日期场景；若需含时分秒可改用datetime）" json:"attendance_date"`
+	// 打卡地点
+	Location string `gorm:"column:location;type:varchar(500);default:null;comment:打卡地点（支持详细地址/坐标，长度适配高德地址返回）" json:"location"`
+}

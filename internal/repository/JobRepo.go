@@ -459,3 +459,11 @@ func GetJobApplicationsByStudentUserID(userID int) (model.StudentUserApplication
 	return ans, err
 
 }
+
+func StudentUserAttendance(params dto.StudentUserAttendanceParams) error {
+	return initialize.DB.Create(&model.AttendanceRecord{
+		JobApplicationID: params.JobApplicationId,
+		Location:         params.Location,
+		AttendanceDate:   time.Now().Format("2006-01-02"),
+	}).Error
+}

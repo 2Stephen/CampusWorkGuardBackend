@@ -293,3 +293,26 @@ func GetStudentUserApplicationListController(c *gin.Context) {
 		"total":        1,
 	})
 }
+
+func StudentUserAttendanceController(c *gin.Context) {
+	var params dto.StudentUserAttendanceParams
+	if err := c.ShouldBind(&params); err != nil {
+		response.Fail(c, 400, "参数绑定错误")
+		return
+	}
+	userID, exists := c.Get("userID")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	err := service.StudentUserAttendanceService(userID.(int), params)
+	if err != nil {
+		if err.Error() == "未找到对应的工作申请" || err.Error() == "该职位未开始或已结束，无法进行考勤" || err.Error() == "今日已考勤，不能重复考勤" {
+			response.Fail(c, 403, err.Error())
+			return
+		}
+		response.Fail(c, 500, "学生用户考勤失败: "+err.Error())
+		return
+	}
+	response.Success(c, nil)
+}
