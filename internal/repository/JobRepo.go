@@ -475,3 +475,9 @@ func GetAttendanceRecordsByJobApplicationID(jobApplicationID int) ([]model.Atten
 		Find(&records).Error
 	return records, err
 }
+
+func FinishJob(jobApplicationID int) error {
+	return initialize.DB.Model(&model.JobApplication{}).
+		Where("id = ?", jobApplicationID).
+		Update("status", "completed").Error
+}

@@ -506,3 +506,28 @@ func GetStudentUserAttendanceListService(jobApplicationId int) ([]model.Attendan
 	}
 	return recordList, nil
 }
+
+func FinishJobService(jobApplicationID int, userID int) error {
+	// 检查是否存在当前职位申请
+	application, err := repository.GetJobApplicationByID(jobApplicationID)
+	if err != nil {
+		log.Println("Error retrieving job application info:", err)
+		return err
+	}
+	jobInfo, err := repository.GetJobByID(application.JobID)
+	if err != nil {
+		log.Println("Error retrieving job info:", err)
+		return err
+	}
+	companyUser, err := repository.GetCompanyUserBySocialCode(jobInfo.CompanyID)
+	if err != nil {
+		log.Println("Error retrieving company user info:", err)
+		return err
+	}
+	if application.ID == 0 || int(companyUser.ID) != userID {
+		log.Println("Job application not found or user unauthorized to finish job:", jobApplicationID)
+		return errors.New("未找到对应的工作申请或无权限完成该工作")
+	}
+	// 完成工作
+	return repository.FinishJob(jobApplicationID)
+}

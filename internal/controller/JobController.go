@@ -331,3 +331,27 @@ func GetStudentUserAttendanceListController(c *gin.Context) {
 	}
 	response.Success(c, records)
 }
+
+func FinishJobController(c *gin.Context) {
+	jobApplicationID := c.Query("jobApplicationId")
+	jobApplicationIDInt, err := strconv.Atoi(jobApplicationID)
+	if err != nil {
+		response.Fail(c, 400, "Invalid job application ID")
+		return
+	}
+	userId, exists := c.Get("userID")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	err = service.FinishJobService(jobApplicationIDInt, userId.(int))
+	if err != nil {
+		if err.Error() == "职位申请不存在" || err.Error() == "无权限结束该职位" || err.Error() == "该职位申请未被录用，无法结束" || err.Error() == "该职位申请已结束" {
+			response.Fail(c, 403, err.Error())
+			return
+		}
+		response.Fail(c, 500, "结束职位失败: "+err.Error())
+		return
+	}
+	response.Success(c, nil)
+}

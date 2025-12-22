@@ -48,3 +48,12 @@ func GetCompanyUserByID(id int64) *model.CompanyUser {
 	}
 	return &user
 }
+
+func GetCompanyUserBySocialCode(socialCode string) (*model.CompanyUser, error) {
+	var user model.CompanyUser
+	err := initialize.DB.Where("social_code = ?", socialCode).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
