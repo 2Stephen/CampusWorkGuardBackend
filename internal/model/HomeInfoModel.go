@@ -19,3 +19,8 @@ type TopMajorJob struct {
 	Major string `json:"major"`
 	Value int    `json:"value"`
 }
+
+type JobType struct {
+	Type  string `json:"type"`
+	Value int    `json:"value"`
+}

@@ -67,7 +67,7 @@ func SetupRouter() *gin.Engine {
 			home.GET("/static_info", controllers.GetHomeStaticInfoController)
 			home.POST("upload_avatar", controllers.UploadAvatarController)
 			home.GET("/top5_major_jobs", controllers.GetTop5MajorJobsController)
-			//home.GET("/job_types", controllers.GetJobTypesController)
+			home.GET("/job_types", controllers.GetJobTypesController)
 		}
 		adminUser := api.Group("/admin_user")
 		adminUser.Use(middlewares.TokenAuthRequired)

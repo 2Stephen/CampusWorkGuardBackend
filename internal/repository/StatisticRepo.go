@@ -3,6 +3,7 @@ package repository
 import (
 	"CampusWorkGuardBackend/internal/initialize"
 	"CampusWorkGuardBackend/internal/model"
+	"log"
 )
 
 func GetTop5MajorJobs() ([]model.TopMajorJob, error) {
@@ -16,4 +17,14 @@ func GetTop5MajorJobs() ([]model.TopMajorJob, error) {
 		return nil, err
 	}
 	return majorJobs, nil
+}
+
+func GetJobTypes() ([]model.JobType, error) {
+	var jobTypes []model.JobType
+	err := initialize.DB.Raw("SELECT count(*) as value,job_infos.type FROM job_infos GROUP BY job_infos.type").Scan(&jobTypes).Error
+	if err != nil {
+		log.Println("Error fetching job types:", err)
+		return nil, err
+	}
+	return jobTypes, nil
 }

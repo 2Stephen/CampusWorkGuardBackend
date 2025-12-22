@@ -66,3 +66,11 @@ func GetTop5MajorJobsService() ([]model.TopMajorJob, error) {
 	}
 	return majorJobs, nil
 }
+
+func GetJobTypesService() ([]model.JobType, error) {
+	jobTypes, err := repository.GetJobTypes()
+	if err != nil {
+		return nil, err
+	}
+	return jobTypes, nil
+}

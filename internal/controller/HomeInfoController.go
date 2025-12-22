@@ -88,3 +88,12 @@ func GetTop5MajorJobsController(ctx *gin.Context) {
 	}
 	response.Success(ctx, top5)
 }
+
+func GetJobTypesController(ctx *gin.Context) {
+	types, err := service.GetJobTypesService()
+	if err != nil {
+		response.Fail(ctx, 500, "获取职位类型分布失败: "+err.Error())
+		return
+	}
+	response.Success(ctx, types)
+}
