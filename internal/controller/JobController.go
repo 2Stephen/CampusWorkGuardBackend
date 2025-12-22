@@ -316,3 +316,18 @@ func StudentUserAttendanceController(c *gin.Context) {
 	}
 	response.Success(c, nil)
 }
+
+func GetStudentUserAttendanceListController(c *gin.Context) {
+	applicationJobID := c.Query("jobApplicationId")
+	applicationJobIDInt, err := strconv.Atoi(applicationJobID)
+	if err != nil {
+		response.Fail(c, 400, "Invalid application job ID")
+		return
+	}
+	records, err := service.GetStudentUserAttendanceListService(applicationJobIDInt)
+	if err != nil {
+		response.Fail(c, 500, "获取学生用户考勤列表失败: "+err.Error())
+		return
+	}
+	response.Success(c, records)
+}

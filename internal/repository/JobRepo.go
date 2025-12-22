@@ -467,3 +467,11 @@ func StudentUserAttendance(params dto.StudentUserAttendanceParams) error {
 		AttendanceDate:   time.Now().Format("2006-01-02"),
 	}).Error
 }
+
+func GetAttendanceRecordsByJobApplicationID(jobApplicationID int) ([]model.AttendanceRecord, error) {
+	var records []model.AttendanceRecord
+	err := initialize.DB.Where("job_application_id = ?", jobApplicationID).
+		Order("attendance_date DESC").
+		Find(&records).Error
+	return records, err
+}

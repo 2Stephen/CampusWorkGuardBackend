@@ -489,3 +489,20 @@ func StudentUserAttendanceService(userID int, params dto.StudentUserAttendancePa
 	// 签到
 	return repository.StudentUserAttendance(params)
 }
+
+func GetStudentUserAttendanceListService(jobApplicationId int) ([]model.AttendanceRecordList, error) {
+	records, err := repository.GetAttendanceRecordsByJobApplicationID(jobApplicationId)
+	if err != nil {
+		log.Println("Error retrieving attendance records:", err)
+		return nil, err
+	}
+	var recordList []model.AttendanceRecordList
+	for _, record := range records {
+		r := model.AttendanceRecordList{
+			AttendanceDate: record.AttendanceDate,
+			Location:       record.Location,
+		}
+		recordList = append(recordList, r)
+	}
+	return recordList, nil
+}

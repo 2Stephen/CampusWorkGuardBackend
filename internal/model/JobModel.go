@@ -105,3 +105,8 @@ type AttendanceRecord struct {
 	// 打卡地点
 	Location string `gorm:"column:location;type:varchar(500);default:null;comment:打卡地点（支持详细地址/坐标，长度适配高德地址返回）" json:"location"`
 }
+
+type AttendanceRecordList struct {
+	AttendanceDate string `json:"attendance_date"`
+	Location       string `json:"location"`
+}
