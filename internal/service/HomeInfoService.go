@@ -58,3 +58,11 @@ func UploadAvatarService(filePath string, userId int, role string) error {
 	}
 	return nil
 }
+
+func GetTop5MajorJobsService() ([]model.TopMajorJob, error) {
+	majorJobs, err := repository.GetTop5MajorJobs()
+	if err != nil {
+		return nil, err
+	}
+	return majorJobs, nil
+}

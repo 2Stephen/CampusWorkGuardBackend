@@ -79,3 +79,12 @@ func UploadAvatarController(c *gin.Context) {
 	}
 	response.Success(c, gin.H{"url": url})
 }
+
+func GetTop5MajorJobsController(ctx *gin.Context) {
+	top5, err := service.GetTop5MajorJobsService()
+	if err != nil {
+		response.Fail(ctx, 500, "获取热门专业职位失败: "+err.Error())
+		return
+	}
+	response.Success(ctx, top5)
+}

@@ -7,3 +7,15 @@ type HomeStaticInfo struct {
 	VerifyStatus string `json:"verify_status"`
 	FailInfo     string `json:"fail_info"`
 }
+
+type TopMajorJob struct {
+	// const majorJobTop5Data = [
+	//  {major: "计算机科学", value: 160},
+	//  {major: "软件工程", value: 140},
+	//  {major: "信息管理", value: 110},
+	//  {major: "电子信息", value: 95},
+	//  {major: "人工智能", value: 80},
+	//];
+	Major string `json:"major"`
+	Value int    `json:"value"`
+}
