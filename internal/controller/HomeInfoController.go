@@ -79,3 +79,30 @@ func UploadAvatarController(c *gin.Context) {
 	}
 	response.Success(c, gin.H{"url": url})
 }
+
+func GetTop5MajorJobsController(ctx *gin.Context) {
+	top5, err := service.GetTop5MajorJobsService()
+	if err != nil {
+		response.Fail(ctx, 500, "获取热门专业职位失败: "+err.Error())
+		return
+	}
+	response.Success(ctx, top5)
+}
+
+func GetJobTypesController(ctx *gin.Context) {
+	types, err := service.GetJobTypesService()
+	if err != nil {
+		response.Fail(ctx, 500, "获取职位类型分布失败: "+err.Error())
+		return
+	}
+	response.Success(ctx, types)
+}
+
+func GetAverageSalariesByMajorController(ctx *gin.Context) {
+	avgSalaries, err := service.GetAverageSalariesByMajorService()
+	if err != nil {
+		response.Fail(ctx, 500, "获取各专业平均薪资失败: "+err.Error())
+		return
+	}
+	response.Success(ctx, avgSalaries)
+}

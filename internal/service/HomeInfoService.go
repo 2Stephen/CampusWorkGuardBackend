@@ -3,6 +3,7 @@ package service
 import (
 	"CampusWorkGuardBackend/internal/model"
 	"CampusWorkGuardBackend/internal/repository"
+	"log"
 )
 
 func GetHomeStaticInfo(userId int, role string, email string) (*model.HomeStaticInfo, error) {
@@ -57,4 +58,29 @@ func UploadAvatarService(filePath string, userId int, role string) error {
 		return repository.UpdateCompanyUserAvatarURL(filePath, userId)
 	}
 	return nil
+}
+
+func GetTop5MajorJobsService() ([]model.TopMajorJob, error) {
+	majorJobs, err := repository.GetTop5MajorJobs()
+	if err != nil {
+		return nil, err
+	}
+	return majorJobs, nil
+}
+
+func GetJobTypesService() ([]model.JobType, error) {
+	jobTypes, err := repository.GetJobTypes()
+	if err != nil {
+		return nil, err
+	}
+	return jobTypes, nil
+}
+
+func GetAverageSalariesByMajorService() ([]model.AverageSalaryByMajor, error) {
+	avgSalaries, err := repository.GetAverageSalariesByMajor()
+	if err != nil {
+		log.Println("Error in service layer fetching average salaries by major:", err)
+		return nil, err
+	}
+	return avgSalaries, nil
 }
