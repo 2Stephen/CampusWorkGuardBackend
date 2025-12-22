@@ -2,6 +2,7 @@ package controller
 
 import (
 	"CampusWorkGuardBackend/internal/dto"
+	"CampusWorkGuardBackend/internal/model"
 	"CampusWorkGuardBackend/internal/model/response"
 	"CampusWorkGuardBackend/internal/service"
 	"github.com/gin-gonic/gin"
@@ -274,4 +275,83 @@ func GetAdminJobApplicationListController(c *gin.Context) {
 		"applications": applications,
 		"total":        total,
 	})
+}
+
+func GetStudentUserApplicationListController(c *gin.Context) {
+	userID, exists := c.Get("userID")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	res, err := service.GetStudentUserApplicationListService(userID.(int))
+	if err != nil {
+		response.Fail(c, 500, "获取学生用户申请列表失败: "+err.Error())
+		return
+	}
+	response.Success(c, gin.H{
+		"applications": []model.StudentUserApplicationDetail{res},
+		"total":        1,
+	})
+}
+
+func StudentUserAttendanceController(c *gin.Context) {
+	var params dto.StudentUserAttendanceParams
+	if err := c.ShouldBind(&params); err != nil {
+		response.Fail(c, 400, "参数绑定错误")
+		return
+	}
+	userID, exists := c.Get("userID")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	err := service.StudentUserAttendanceService(userID.(int), params)
+	if err != nil {
+		if err.Error() == "未找到对应的工作申请" || err.Error() == "该职位未开始或已结束，无法进行考勤" || err.Error() == "今日已考勤，不能重复考勤" {
+			response.Fail(c, 403, err.Error())
+			return
+		}
+		response.Fail(c, 500, "学生用户考勤失败: "+err.Error())
+		return
+	}
+	response.Success(c, nil)
+}
+
+func GetStudentUserAttendanceListController(c *gin.Context) {
+	applicationJobID := c.Query("jobApplicationId")
+	applicationJobIDInt, err := strconv.Atoi(applicationJobID)
+	if err != nil {
+		response.Fail(c, 400, "Invalid application job ID")
+		return
+	}
+	records, err := service.GetStudentUserAttendanceListService(applicationJobIDInt)
+	if err != nil {
+		response.Fail(c, 500, "获取学生用户考勤列表失败: "+err.Error())
+		return
+	}
+	response.Success(c, records)
+}
+
+func FinishJobController(c *gin.Context) {
+	jobApplicationID := c.Query("jobApplicationId")
+	jobApplicationIDInt, err := strconv.Atoi(jobApplicationID)
+	if err != nil {
+		response.Fail(c, 400, "Invalid job application ID")
+		return
+	}
+	userId, exists := c.Get("userID")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	err = service.FinishJobService(jobApplicationIDInt, userId.(int))
+	if err != nil {
+		if err.Error() == "职位申请不存在" || err.Error() == "无权限结束该职位" || err.Error() == "该职位申请未被录用，无法结束" || err.Error() == "该职位申请已结束" {
+			response.Fail(c, 403, err.Error())
+			return
+		}
+		response.Fail(c, 500, "结束职位失败: "+err.Error())
+		return
+	}
+	response.Success(c, nil)
 }

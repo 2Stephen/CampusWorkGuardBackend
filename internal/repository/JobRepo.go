@@ -418,3 +418,66 @@ func GetJobApplicationsForAdmin(params dto.GetAdminJobApplicationListParams) ([]
 
 	return list, total, err
 }
+
+func GetJobApplicationsByStudentUserID(userID int) (model.StudentUserApplicationDetail, error) {
+	var ans model.StudentUserApplicationDetail
+	err := initialize.DB.Table("job_applications AS ja").
+		Joins("LEFT JOIN job_infos AS j ON ja.job_id = j.id").
+		Joins("LEFT JOIN company_users AS c ON j.company_id = c.social_code").
+		Joins("LEFT JOIN student_users AS su ON ja.student_id = su.id").
+		Joins("LEFT JOIN chsi_student_infos AS csi ON su.email = csi.email").
+		Where("ja.student_id = ?", userID).
+		// {
+		//    "code": 200,
+		//    "message": "",
+		//    "data": {
+		//        "applications": {
+		//            "id": 2,
+		//            "company": "美团",
+		//            "name": "SRE",
+		//            "major": "CS",
+		//            "studentName": "",
+		//            "studentId": "",
+		//            "studentMajor": "",
+		//            "status": "ongoing"
+		//        },
+		//        "total": 1
+		//    }
+		//}
+		Select(`
+			ja.id,
+			j.name,
+			c.company,
+			j.major,
+			csi.name AS student_name,
+			su.student_id,
+			csi.major AS student_major,
+			ja.status
+		`).
+		Order("ja.created_at DESC").
+		Scan(&ans).Error
+	return ans, err
+
+}
+
+func StudentUserAttendance(params dto.StudentUserAttendanceParams) error {
+	return initialize.DB.Create(&model.AttendanceRecord{
+		JobApplicationID: params.JobApplicationId,
+		Location:         params.Location,
+		AttendanceDate:   time.Now().Format("2006-01-02"),
+	}).Error
+}
+
+func GetAttendanceRecordsByJobApplicationID(jobApplicationID int) ([]model.AttendanceRecord, error) {
+	var records []model.AttendanceRecord
+	err := initialize.DB.Where("job_application_id = ?", jobApplicationID).
+		Order("attendance_date DESC").
+		Find(&records).Error
+	return records, err
+}
+
+func FinishJob(jobApplicationID int) error {
+	return initialize.DB.Model(&model.JobApplication{}).
+		Where("id = ?", jobApplicationID).
+		Update("status", "completed").Error
+}

@@ -46,6 +46,9 @@ func SetupRouter() *gin.Engine {
 			studentUser.GET("/profile_info", controllers.GetStudentUserProfileInfoController)
 			studentUser.POST("/job_match_list", controllers.StudentUserJobMatchListController)
 			studentUser.GET("/apply_job", controllers.StudentUserApplyJobController)
+			studentUser.POST("/job_application_list", controllers.GetStudentUserApplicationListController)
+			studentUser.POST("/attendance", controllers.StudentUserAttendanceController)
+			studentUser.GET("/get_attendance_list", controllers.GetStudentUserAttendanceListController)
 		}
 		companyUser := api.Group("/company_user")
 		companyUser.Use(middlewares.TokenAuthRequired)
@@ -60,6 +63,7 @@ func SetupRouter() *gin.Engine {
 			companyUser.GET("/delete_job", controllers.DeleteJobController)
 			companyUser.POST("/job_application_list", controllers.GetJobApplicationListController)
 			companyUser.POST("/pay_deposit", controllers.PayDepositController)
+			companyUser.GET("/finish_job", controllers.FinishJobController)
 		}
 		home := api.Group("/home")
 		home.Use(middlewares.TokenAuthRequired)
