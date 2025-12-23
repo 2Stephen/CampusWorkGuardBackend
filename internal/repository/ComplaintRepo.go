@@ -25,7 +25,7 @@ func DeleteComplaintRecord(complaintID int) error {
 }
 
 func UpdateComplaintRecordCompanyDefense(complaintID int, defense string) error {
-	return initialize.DB.Model(&model.ComplaintRecord{}).Where("id = ?", complaintID).Update("company_defense", defense).Error
+	return initialize.DB.Model(&model.ComplaintRecord{}).Where("id = ?", complaintID).Update("company_defense", defense).Update("status", "processed").Error
 }
 
 func GetComplaintRecordsByStudentID(params dto.GetComplaintListParams, studentID int) ([]model.ComplaintRecord, int, error) {
@@ -91,5 +91,5 @@ func GetAllComplaintRecords(params dto.GetComplaintListParams) ([]model.Complain
 }
 
 func UpdateComplaintRecordResultInfo(complaintID int, resultInfo string) error {
-	return initialize.DB.Model(&model.ComplaintRecord{}).Where("id = ?", complaintID).Update("result_info", resultInfo).Error
+	return initialize.DB.Model(&model.ComplaintRecord{}).Where("id = ?", complaintID).Update("result_info", resultInfo).Update("status", "resolved").Error
 }

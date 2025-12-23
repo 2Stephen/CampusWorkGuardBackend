@@ -100,6 +100,9 @@ func ProcessComplaintService(params dto.CompanyProcessComplaint, userID int) err
 	if complaint.CompanyID != userID {
 		return errors.New("无权限处理该投诉记录")
 	}
+	if complaint.Status != "submitted" {
+		return errors.New("企业已经处理过或管理员已经解决该投诉")
+	}
 	return repository.UpdateComplaintRecordCompanyDefense(complaintID, params.CompanyDefense)
 }
 
@@ -114,6 +117,9 @@ func ResolveComplaintService(params dto.AdminResolveComplaint) error {
 	}
 	if complaint == nil {
 		return errors.New("未找到对应的投诉记录")
+	}
+	if complaint.Status != "processed" {
+		return errors.New("只能处理企业用户答辩后的投诉记录")
 	}
 	return repository.UpdateComplaintRecordResultInfo(complaintID, params.ResultInfo)
 }

@@ -121,7 +121,7 @@ func ProcessComplaintController(c *gin.Context) {
 			response.Fail(c, 403, err.Error())
 			return
 		}
-		if err.Error() == "无效的投诉ID" {
+		if err.Error() == "无效的投诉ID" || err.Error() == "企业已经处理过或管理员已经解决该投诉" {
 			response.Fail(c, 400, err.Error())
 			return
 		}
@@ -146,7 +146,7 @@ func ResolveComplaintController(c *gin.Context) {
 	}
 	err := service.ResolveComplaintService(params)
 	if err != nil {
-		if err.Error() == "无效的投诉ID" {
+		if err.Error() == "无效的投诉ID" || err.Error() == "只能处理企业用户答辩后的投诉记录" {
 			response.Fail(c, 400, err.Error())
 			return
 		}
