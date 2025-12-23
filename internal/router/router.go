@@ -50,6 +50,7 @@ func SetupRouter() *gin.Engine {
 			studentUser.POST("/job_application_list", controllers.GetStudentUserApplicationListController)
 			studentUser.POST("/attendance", controllers.StudentUserAttendanceController)
 			studentUser.GET("/get_attendance_list", controllers.GetStudentUserAttendanceListController)
+			studentUser.POST("/submit_complaint", controllers.SubmitComplaintController)
 
 		}
 		companyUser := api.Group("/company_user")
