@@ -11,3 +11,12 @@ type ComplaintRecord struct {
 	Status         string `gorm:"column:status;type:varchar(32);not null;comment:投诉状态（submitted/processed/resolved）" json:"status"`
 	ResultInfo     string `gorm:"column:result_info;type:varchar(500);default:null;comment:申诉结果信息（管理员填写）" json:"result_info"`
 }
+
+type ComplaintRecordList struct {
+	Id            int    `json:"id"`
+	Title         string `json:"title"`
+	Company       string `json:"company"`
+	ComplaintDate string `json:"complaintDate"`
+	ComplaintType string `json:"complaintType"`
+	Status        string `json:"status"`
+}

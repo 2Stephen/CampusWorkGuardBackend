@@ -72,3 +72,12 @@ func GetAllCompanies(search string) ([]model.CompanyUser, error) {
 	}
 	return companies, nil
 }
+
+func GetCompanyByID(companyID int) (*model.CompanyUser, error) {
+	var company model.CompanyUser
+	err := initialize.DB.Where("id = ?", companyID).First(&company).Error
+	if err != nil {
+		return nil, err
+	}
+	return &company, nil
+}

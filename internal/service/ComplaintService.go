@@ -34,3 +34,39 @@ func DeleteComplaintService(complaintID int, userID int) error {
 	}
 	return repository.DeleteComplaintRecord(complaintID)
 }
+
+func GetComplaintListService(params dto.GetComplaintListParams, userID int, role string) ([]model.ComplaintRecordList, int, error) {
+	var complaints []model.ComplaintRecord
+	var total int
+	var err error
+	// 根据用户角色调用不同的repository层查询逻辑
+	if role == "student" {
+		complaints, total, err = repository.GetComplaintRecordsByStudentID(params, userID)
+	} else if role == "company" {
+		complaints, total, err = repository.GetComplaintRecordsByCompanyID(params, userID)
+	} else if role == "admin" {
+		complaints, total, err = repository.GetAllComplaintRecords(params)
+	} else {
+		return nil, 0, errors.New("无效的用户角色")
+	}
+	var complaintList []model.ComplaintRecordList
+	for _, complaint := range complaints {
+		company, err := repository.GetCompanyByID(complaint.CompanyID)
+		if err != nil {
+			return nil, 0, err
+		}
+		if company == nil {
+			return nil, 0, errors.New("未找到对应的公司信息")
+		}
+		list := model.ComplaintRecordList{
+			Id:            complaint.ID,
+			Title:         complaint.Title,
+			Company:       company.Company,
+			ComplaintDate: complaint.ComplaintDate,
+			ComplaintType: complaint.ComplaintType,
+			Status:        complaint.Status,
+		}
+		complaintList = append(complaintList, list)
+	}
+	return complaintList, total, err
+}

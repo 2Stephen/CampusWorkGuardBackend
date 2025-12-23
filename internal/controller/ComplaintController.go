@@ -55,3 +55,31 @@ func DeleteComplaintController(c *gin.Context) {
 	}
 	response.Success(c, nil)
 }
+
+func GetComplaintListController(c *gin.Context) {
+	userID, exists := c.Get("userID")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	role, exists := c.Get("role")
+	if !exists {
+		response.Fail(c, 401, "用户角色未识别")
+		return
+	}
+	var params dto.GetComplaintListParams
+	if err := c.ShouldBind(&params); err != nil {
+		response.Fail(c, 400, "Invalid request parameters")
+		return
+	}
+	complaints, total, err := service.GetComplaintListService(params, userID.(int), role.(string))
+	if err != nil {
+		log.Println("获取投诉列表失败:", err)
+		response.Fail(c, 500, "Failed to get complaint list: "+err.Error())
+		return
+	}
+	response.Success(c, gin.H{
+		"complaints": complaints,
+		"total":      total,
+	})
+}
