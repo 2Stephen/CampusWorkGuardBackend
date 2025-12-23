@@ -11,3 +11,8 @@ type GetComplaintListParams struct {
 	Page     int    `form:"page" binding:"required"`
 	PageSize int    `form:"pageSize" binding:"required"`
 }
+
+type CompanyProcessComplaint struct {
+	Id             string `json:"id"`
+	CompanyDefense string `json:"companyDefense"`
+}

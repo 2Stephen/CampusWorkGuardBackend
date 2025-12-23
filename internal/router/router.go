@@ -68,6 +68,7 @@ func SetupRouter() *gin.Engine {
 			companyUser.POST("/job_application_list", controllers.GetJobApplicationListController)
 			companyUser.POST("/pay_deposit", controllers.PayDepositController)
 			companyUser.GET("/finish_job", controllers.FinishJobController)
+			companyUser.POST("/process_complaint", controllers.ProcessComplaintController)
 		}
 		home := api.Group("/home")
 		home.Use(middlewares.TokenAuthRequired)
@@ -89,6 +90,7 @@ func SetupRouter() *gin.Engine {
 			adminUser.POST("/company_list", controllers.GetAdminCompanyListController)
 			adminUser.POST("/review_company", controllers.ReviewCompanyController)
 			adminUser.POST("/job_application_list", controllers.GetAdminJobApplicationListController)
+			//adminUser.POST("/resolve_complaint", controllers.ResolveComplaintController)
 		}
 	}
 	return r

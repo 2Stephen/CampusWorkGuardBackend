@@ -101,3 +101,37 @@ func GetComplaintReplyController(c *gin.Context) {
 	}
 	response.Success(c, complaint)
 }
+
+func ProcessComplaintController(c *gin.Context) {
+	var (
+		params dto.CompanyProcessComplaint
+	)
+	if err := c.ShouldBind(&params); err != nil {
+		response.Fail(c, 400, "Invalid request parameters")
+		return
+	}
+	userID, exists := c.Get("userID")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	err := service.ProcessComplaintService(params, userID.(int))
+	if err != nil {
+		if err.Error() == "无权限处理该投诉" {
+			response.Fail(c, 403, err.Error())
+			return
+		}
+		if err.Error() == "无效的投诉ID" {
+			response.Fail(c, 400, err.Error())
+			return
+		}
+		if err.Error() == "未找到对应的投诉记录" {
+			response.Fail(c, 404, err.Error())
+			return
+		}
+		log.Println("处理投诉失败:", err)
+		response.Fail(c, 500, "Failed to process complaint: "+err.Error())
+		return
+	}
+	response.Success(c, nil)
+}

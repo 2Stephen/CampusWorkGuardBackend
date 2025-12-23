@@ -24,6 +24,10 @@ func DeleteComplaintRecord(complaintID int) error {
 	return initialize.DB.Delete(&model.ComplaintRecord{}, complaintID).Error
 }
 
+func UpdateComplaintRecordCompanyDefense(complaintID int, defense string) error {
+	return initialize.DB.Model(&model.ComplaintRecord{}).Where("id = ?", complaintID).Update("company_defense", defense).Error
+}
+
 func GetComplaintRecordsByStudentID(params dto.GetComplaintListParams, studentID int) ([]model.ComplaintRecord, int, error) {
 	var complaints []model.ComplaintRecord
 	var total int64
