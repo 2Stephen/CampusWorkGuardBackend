@@ -76,6 +76,13 @@ func GetJobTypesService() ([]model.JobType, error) {
 	return jobTypes, nil
 }
 
+func GetComplaintTypesService() ([]model.ComplaintType, error) {
+	complaintTypes, err := repository.GetComplaintTypes()
+	if err != nil {
+		return nil, err
+	}
+	return complaintTypes, nil
+}
 func GetAverageSalariesByMajorService() ([]model.AverageSalaryByMajor, error) {
 	avgSalaries, err := repository.GetAverageSalariesByMajor()
 	if err != nil {

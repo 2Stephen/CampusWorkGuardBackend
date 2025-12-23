@@ -78,6 +78,7 @@ func SetupRouter() *gin.Engine {
 			home.GET("/top5_major_jobs", controllers.GetTop5MajorJobsController)
 			home.GET("/job_types", controllers.GetJobTypesController)
 			home.GET("/average_salaries_by_major", controllers.GetAverageSalariesByMajorController)
+			home.GET("/complaint_types", controllers.GetComplaintTypesController)
 			home.POST("/complaint_list", controllers.GetComplaintListController)
 			home.GET("/complaint_reply", controllers.GetComplaintReplyController)
 		}

@@ -29,6 +29,16 @@ func GetJobTypes() ([]model.JobType, error) {
 	return jobTypes, nil
 }
 
+func GetComplaintTypes() ([]model.ComplaintType, error) {
+	var complaintTypes []model.ComplaintType
+	err := initialize.DB.Raw("SELECT count(*) as value,complaint_records.complaint_type as type FROM complaint_records GROUP BY type").Scan(&complaintTypes).Error
+	if err != nil {
+		log.Println("Error fetching complaint types:", err)
+		return nil, err
+	}
+	return complaintTypes, nil
+}
+
 func GetAverageSalariesByMajor() ([]model.AverageSalaryByMajor, error) {
 	// SELECT job_infos.major, AVG(
 	//	CASE job_infos.salary_unit

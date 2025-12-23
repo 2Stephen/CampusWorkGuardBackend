@@ -98,6 +98,15 @@ func GetJobTypesController(ctx *gin.Context) {
 	response.Success(ctx, types)
 }
 
+func GetComplaintTypesController(ctx *gin.Context) {
+	types, err := service.GetComplaintTypesService()
+	if err != nil {
+		response.Fail(ctx, 500, "获取投诉类型失败: "+err.Error())
+		return
+	}
+	response.Success(ctx, types)
+}
+
 func GetAverageSalariesByMajorController(ctx *gin.Context) {
 	avgSalaries, err := service.GetAverageSalariesByMajorService()
 	if err != nil {
