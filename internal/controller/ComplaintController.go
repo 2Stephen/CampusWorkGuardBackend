@@ -83,3 +83,19 @@ func GetComplaintListController(c *gin.Context) {
 		"total":      total,
 	})
 }
+
+func GetComplaintReplyController(c *gin.Context) {
+	id := c.Param("id")
+	complaintID, err := strconv.Atoi(id)
+	if err != nil {
+		response.Fail(c, 400, "Invalid complaint ID")
+		return
+	}
+	complaint, err := service.GetComplaintReplyService(complaintID)
+	if err != nil {
+		log.Println("获取投诉回复失败:", err)
+		response.Fail(c, 500, "Failed to get complaint reply: "+err.Error())
+		return
+	}
+	response.Success(c, complaint)
+}

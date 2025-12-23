@@ -70,3 +70,16 @@ func GetComplaintListService(params dto.GetComplaintListParams, userID int, role
 	}
 	return complaintList, total, err
 }
+
+func GetComplaintReplyService(complaintID int) (*model.ComplaintReply, error) {
+	complaint, err := repository.GetComplaintRecordByID(complaintID)
+	if err != nil {
+		return nil, err
+	}
+	reply := &model.ComplaintReply{
+		Id:             complaint.ID,
+		CompanyDefense: complaint.CompanyDefense,
+		ResultInfo:     complaint.ResultInfo,
+	}
+	return reply, nil
+}

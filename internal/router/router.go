@@ -78,6 +78,7 @@ func SetupRouter() *gin.Engine {
 			home.GET("/job_types", controllers.GetJobTypesController)
 			home.GET("/average_salaries_by_major", controllers.GetAverageSalariesByMajorController)
 			home.POST("/complaint_list", controllers.GetComplaintListController)
+			home.GET("/complaint_reply", controllers.GetComplaintReplyController)
 		}
 		adminUser := api.Group("/admin_user")
 		adminUser.Use(middlewares.TokenAuthRequired)

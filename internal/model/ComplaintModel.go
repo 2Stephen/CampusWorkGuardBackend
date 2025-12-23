@@ -20,3 +20,9 @@ type ComplaintRecordList struct {
 	ComplaintType string `json:"complaintType"`
 	Status        string `json:"status"`
 }
+
+type ComplaintReply struct {
+	Id             int    `json:"id"`
+	CompanyDefense string `json:"companyDefense"`
+	ResultInfo     string `json:"resultInfo"`
+}
