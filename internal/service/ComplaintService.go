@@ -102,3 +102,18 @@ func ProcessComplaintService(params dto.CompanyProcessComplaint, userID int) err
 	}
 	return repository.UpdateComplaintRecordCompanyDefense(complaintID, params.CompanyDefense)
 }
+
+func ResolveComplaintService(params dto.AdminResolveComplaint) error {
+	complaintID, err := strconv.Atoi(params.Id)
+	if err != nil {
+		return errors.New("无效的投诉ID")
+	}
+	complaint, err := repository.GetComplaintRecordByID(complaintID)
+	if err != nil {
+		return err
+	}
+	if complaint == nil {
+		return errors.New("未找到对应的投诉记录")
+	}
+	return repository.UpdateComplaintRecordResultInfo(complaintID, params.ResultInfo)
+}

@@ -89,3 +89,7 @@ func GetAllComplaintRecords(params dto.GetComplaintListParams) ([]model.Complain
 	}
 	return complaints, int(total), nil
 }
+
+func UpdateComplaintRecordResultInfo(complaintID int, resultInfo string) error {
+	return initialize.DB.Model(&model.ComplaintRecord{}).Where("id = ?", complaintID).Update("result_info", resultInfo).Error
+}

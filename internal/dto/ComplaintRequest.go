@@ -16,3 +16,8 @@ type CompanyProcessComplaint struct {
 	Id             string `json:"id"`
 	CompanyDefense string `json:"companyDefense"`
 }
+
+type AdminResolveComplaint struct {
+	Id         string `json:"id"`
+	ResultInfo string `json:"resultInfo"`
+}

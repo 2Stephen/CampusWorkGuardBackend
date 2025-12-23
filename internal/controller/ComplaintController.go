@@ -87,7 +87,7 @@ func GetComplaintListController(c *gin.Context) {
 }
 
 func GetComplaintReplyController(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Query("id")
 	complaintID, err := strconv.Atoi(id)
 	if err != nil {
 		response.Fail(c, 400, "Invalid complaint ID")
@@ -131,6 +131,31 @@ func ProcessComplaintController(c *gin.Context) {
 		}
 		log.Println("处理投诉失败:", err)
 		response.Fail(c, 500, "Failed to process complaint: "+err.Error())
+		return
+	}
+	response.Success(c, nil)
+}
+
+func ResolveComplaintController(c *gin.Context) {
+	var (
+		params dto.AdminResolveComplaint
+	)
+	if err := c.ShouldBind(&params); err != nil {
+		response.Fail(c, 400, "Invalid request parameters")
+		return
+	}
+	err := service.ResolveComplaintService(params)
+	if err != nil {
+		if err.Error() == "无效的投诉ID" {
+			response.Fail(c, 400, err.Error())
+			return
+		}
+		if err.Error() == "未找到对应的投诉记录" {
+			response.Fail(c, 404, err.Error())
+			return
+		}
+		log.Println("解决投诉失败:", err)
+		response.Fail(c, 500, "Failed to resolve complaint: "+err.Error())
 		return
 	}
 	response.Success(c, nil)
