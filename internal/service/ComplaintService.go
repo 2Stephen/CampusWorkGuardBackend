@@ -5,7 +5,6 @@ import (
 	"CampusWorkGuardBackend/internal/model"
 	"CampusWorkGuardBackend/internal/repository"
 	"errors"
-	"strconv"
 	"time"
 )
 
@@ -86,10 +85,7 @@ func GetComplaintReplyService(complaintID int) (*model.ComplaintReply, error) {
 }
 
 func ProcessComplaintService(params dto.CompanyProcessComplaint, userID int) error {
-	complaintID, err := strconv.Atoi(params.Id)
-	if err != nil {
-		return errors.New("无效的投诉ID")
-	}
+	complaintID := params.Id
 	complaint, err := repository.GetComplaintRecordByID(complaintID)
 	if err != nil {
 		return err
@@ -107,10 +103,7 @@ func ProcessComplaintService(params dto.CompanyProcessComplaint, userID int) err
 }
 
 func ResolveComplaintService(params dto.AdminResolveComplaint) error {
-	complaintID, err := strconv.Atoi(params.Id)
-	if err != nil {
-		return errors.New("无效的投诉ID")
-	}
+	complaintID := params.Id
 	complaint, err := repository.GetComplaintRecordByID(complaintID)
 	if err != nil {
 		return err

@@ -13,11 +13,11 @@ type GetComplaintListParams struct {
 }
 
 type CompanyProcessComplaint struct {
-	Id             string `json:"id"`
+	Id             int    `json:"id"`
 	CompanyDefense string `json:"companyDefense"`
 }
 
 type AdminResolveComplaint struct {
-	Id         string `json:"id"`
+	Id         int    `json:"id"`
 	ResultInfo string `json:"resultInfo"`
 }
