@@ -4,6 +4,7 @@ import (
 	"CampusWorkGuardBackend/internal/dto"
 	"CampusWorkGuardBackend/internal/model"
 	"CampusWorkGuardBackend/internal/repository"
+	"errors"
 	"time"
 )
 
@@ -20,4 +21,16 @@ func SubmitComplaintService(params dto.SubmitComplaintParams, userID int) error 
 		ResultInfo:     "",
 	}
 	return repository.SaveComplaintRecord(&complaint)
+}
+
+func DeleteComplaintService(complaintID int, userID int) error {
+	// 判断用户是否有权限删除该投诉记录
+	complaint, err := repository.GetComplaintRecordByID(complaintID)
+	if err != nil {
+		return err
+	}
+	if complaint.StudentID != userID {
+		return errors.New("无权限删除该投诉记录")
+	}
+	return repository.DeleteComplaintRecord(complaintID)
 }
