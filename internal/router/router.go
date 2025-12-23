@@ -15,6 +15,7 @@ func SetupRouter() *gin.Engine {
 	{
 		api.GET("/school", controllers.GetSchoolListController)
 		api.GET("/location", controllers.GetLocationController)
+		api.GET("/company", controllers.GetCompanyListController)
 		// routes
 		auth := api.Group("/auth")
 		{
@@ -49,6 +50,9 @@ func SetupRouter() *gin.Engine {
 			studentUser.POST("/job_application_list", controllers.GetStudentUserApplicationListController)
 			studentUser.POST("/attendance", controllers.StudentUserAttendanceController)
 			studentUser.GET("/get_attendance_list", controllers.GetStudentUserAttendanceListController)
+			studentUser.POST("/submit_complaint", controllers.SubmitComplaintController)
+			studentUser.GET("/delete_complaint", controllers.DeleteComplaintController)
+
 		}
 		companyUser := api.Group("/company_user")
 		companyUser.Use(middlewares.TokenAuthRequired)
@@ -64,6 +68,7 @@ func SetupRouter() *gin.Engine {
 			companyUser.POST("/job_application_list", controllers.GetJobApplicationListController)
 			companyUser.POST("/pay_deposit", controllers.PayDepositController)
 			companyUser.GET("/finish_job", controllers.FinishJobController)
+			companyUser.POST("/process_complaint", controllers.ProcessComplaintController)
 		}
 		home := api.Group("/home")
 		home.Use(middlewares.TokenAuthRequired)
@@ -73,6 +78,10 @@ func SetupRouter() *gin.Engine {
 			home.GET("/top5_major_jobs", controllers.GetTop5MajorJobsController)
 			home.GET("/job_types", controllers.GetJobTypesController)
 			home.GET("/average_salaries_by_major", controllers.GetAverageSalariesByMajorController)
+			home.GET("/complaint_types", controllers.GetComplaintTypesController)
+			home.POST("/complaint_list", controllers.GetComplaintListController)
+			home.GET("/complaint_reply", controllers.GetComplaintReplyController)
+			home.GET("/complaint_statistic", controllers.GetComplaintStatisticController)
 		}
 		adminUser := api.Group("/admin_user")
 		adminUser.Use(middlewares.TokenAuthRequired)
@@ -83,6 +92,7 @@ func SetupRouter() *gin.Engine {
 			adminUser.POST("/company_list", controllers.GetAdminCompanyListController)
 			adminUser.POST("/review_company", controllers.ReviewCompanyController)
 			adminUser.POST("/job_application_list", controllers.GetAdminJobApplicationListController)
+			adminUser.POST("/resolve_complaint", controllers.ResolveComplaintController)
 		}
 	}
 	return r
