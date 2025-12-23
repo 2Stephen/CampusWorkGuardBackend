@@ -122,3 +122,16 @@ CREATE TABLE IF NOT EXISTS `attendance_records` (
   `location` varchar(500) DEFAULT NULL COMMENT '打卡地点（支持详细地址/坐标，长度适配高德地址返回）',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='应聘打卡记录表';
+
+CREATE TABLE IF NOT EXISTS `complaint_records` (
+    `id` int NOT NULL AUTO_INCREMENT COMMENT '主键id',
+    `student_id` int NOT NULL COMMENT '投诉学生ID',
+    `company_id` int NOT NULL COMMENT '投诉企业ID',
+    `complaint_date` varchar(64) NOT NULL COMMENT '投诉发起日期',
+    `title` varchar(255) NOT NULL COMMENT '投诉标题',
+    `complaint_type` varchar(32) NOT NULL COMMENT '投诉类型',
+    `company_defense` text DEFAULT NULL COMMENT '企业答辩内容',
+    `status` varchar(32) NOT NULL COMMENT '投诉状态（submitted/processed/resolved）',
+    `result_info` varchar(500) DEFAULT NULL COMMENT '申诉结果信息（管理员填写）',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='投诉记录表';

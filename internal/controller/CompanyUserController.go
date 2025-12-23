@@ -65,3 +65,13 @@ func GetCompanyUserProfileInfoController(c *gin.Context) {
 	}
 	response.Success(c, profileInfo)
 }
+
+func GetCompanyListController(c *gin.Context) {
+	search := c.Query("search")
+	list, err := service.GetCompanyListService(search)
+	if err != nil {
+		response.Fail(c, 500, "Failed to get company list: "+err.Error())
+		return
+	}
+	response.Success(c, list)
+}

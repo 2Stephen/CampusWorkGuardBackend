@@ -52,3 +52,18 @@ func GetCompanyUserProfileInfoService(userID int) (*CompanyProfileInfo, error) {
 	}
 	return profileInfo, nil
 }
+
+func GetCompanyListService(search string) ([]dto.CompanyInfo, error) {
+	companies, err := repository.GetAllCompanies(search)
+	if err != nil {
+		return nil, err
+	}
+	var ans []dto.CompanyInfo
+	for _, company := range companies {
+		ans = append(ans, dto.CompanyInfo{
+			ID:   int(company.ID),
+			Name: company.Company,
+		})
+	}
+	return ans, nil
+}

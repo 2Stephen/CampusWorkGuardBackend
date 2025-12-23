@@ -57,3 +57,18 @@ func GetCompanyUserBySocialCode(socialCode string) (*model.CompanyUser, error) {
 	}
 	return &user, nil
 }
+
+func GetAllCompanies(search string) ([]model.CompanyUser, error) {
+	var companies []model.CompanyUser
+	query := initialize.DB.Model(&model.CompanyUser{})
+	if search != "" {
+		query = query.Where("company LIKE ?", "%"+search+"%")
+	}
+	// 限定15条记录
+	query = query.Limit(15)
+	err := query.Find(&companies).Error
+	if err != nil {
+		return nil, err
+	}
+	return companies, nil
+}

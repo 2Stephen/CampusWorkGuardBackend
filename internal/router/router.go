@@ -15,6 +15,7 @@ func SetupRouter() *gin.Engine {
 	{
 		api.GET("/school", controllers.GetSchoolListController)
 		api.GET("/location", controllers.GetLocationController)
+		api.GET("/company", controllers.GetCompanyListController)
 		// routes
 		auth := api.Group("/auth")
 		{
@@ -49,6 +50,7 @@ func SetupRouter() *gin.Engine {
 			studentUser.POST("/job_application_list", controllers.GetStudentUserApplicationListController)
 			studentUser.POST("/attendance", controllers.StudentUserAttendanceController)
 			studentUser.GET("/get_attendance_list", controllers.GetStudentUserAttendanceListController)
+
 		}
 		companyUser := api.Group("/company_user")
 		companyUser.Use(middlewares.TokenAuthRequired)
