@@ -32,9 +32,11 @@ func SubmitComplaintController(c *gin.Context) {
 }
 
 func DeleteComplaintController(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Query("id")
+	log.Println("Received complaint ID to delete:", id)
 	complaintID, err := strconv.Atoi(id)
 	if err != nil {
+		log.Println("Invalid complaint ID:", err)
 		response.Fail(c, 400, "Invalid complaint ID")
 		return
 	}
