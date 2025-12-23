@@ -93,3 +93,49 @@ func GetAllComplaintRecords(params dto.GetComplaintListParams) ([]model.Complain
 func UpdateComplaintRecordResultInfo(complaintID int, resultInfo string) error {
 	return initialize.DB.Model(&model.ComplaintRecord{}).Where("id = ?", complaintID).Update("result_info", resultInfo).Update("status", "resolved").Error
 }
+
+func CountComplaintRecords(userId int, role string) (int64, error) {
+	query := initialize.DB.Model(&model.ComplaintRecord{})
+	if role == "student" {
+		query = query.Where("student_id = ?", userId)
+	} else if role == "company" {
+		query = query.Where("company_id = ?", userId)
+	}
+	var count int64
+	err := query.Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func CountNewComplaintRecordsInLast30Days(userId int, role string, days string) (int64, error) {
+	var count int64
+	query := initialize.DB.Model(&model.ComplaintRecord{}).Where("complaint_date >= ?", days)
+	if role == "student" {
+		query = query.Where("student_id = ?", userId)
+	}
+	if role == "company" {
+		query = query.Where("company_id = ?", userId)
+	}
+	err := query.Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func CountComplaintRecordsByStatus(role string, userId int, status string) (int64, error) {
+	var count int64
+	query := initialize.DB.Model(&model.ComplaintRecord{}).Where("status = ?", status)
+	if role == "student" {
+		query = query.Where("student_id = ?", userId)
+	} else if role == "company" {
+		query = query.Where("company_id = ?", userId)
+	}
+	err := query.Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}

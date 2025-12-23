@@ -5,6 +5,7 @@ import (
 	"CampusWorkGuardBackend/internal/model"
 	"CampusWorkGuardBackend/internal/repository"
 	"errors"
+	"log"
 	"time"
 )
 
@@ -115,4 +116,42 @@ func ResolveComplaintService(params dto.AdminResolveComplaint) error {
 		return errors.New("只能处理企业用户答辩后的投诉记录")
 	}
 	return repository.UpdateComplaintRecordResultInfo(complaintID, params.ResultInfo)
+}
+
+func GetComplaintStatisticService(userId int, role string) (*model.ComplaintStatistics, error) {
+	days := time.Now().AddDate(0, 0, -30).Format("2006-01-02")
+	// 根据用户角色调用不同的repository层统计逻辑
+	totalNums, err := repository.CountComplaintRecords(userId, role)
+	if err != nil {
+		log.Println("统计投诉总数失败:", err)
+		return nil, err
+	}
+	thirtyDaysNewNums, err := repository.CountNewComplaintRecordsInLast30Days(userId, role, days)
+	if err != nil {
+		log.Println("统计近30天新增投诉数失败:", err)
+		return nil, err
+	}
+	submittedNums, err := repository.CountComplaintRecordsByStatus(role, userId, "submitted")
+	if err != nil {
+		log.Println("统计submitted状态投诉数失败:", err)
+		return nil, err
+	}
+	processedNums, err := repository.CountComplaintRecordsByStatus(role, userId, "processed")
+	if err != nil {
+		log.Println("统计processed状态投诉数失败:", err)
+		return nil, err
+	}
+	resolvedNums, err := repository.CountComplaintRecordsByStatus(role, userId, "resolved")
+	if err != nil {
+		log.Println("统计resolved状态投诉数失败:", err)
+		return nil, err
+	}
+	stats := &model.ComplaintStatistics{
+		SubmittedNums:     int(submittedNums),
+		ProcessedNums:     int(processedNums),
+		ResolvedNums:      int(resolvedNums),
+		TotalNums:         int(totalNums),
+		ThirtyDaysNewNums: int(thirtyDaysNewNums),
+	}
+	return stats, nil
 }

@@ -160,3 +160,23 @@ func ResolveComplaintController(c *gin.Context) {
 	}
 	response.Success(c, nil)
 }
+
+func GetComplaintStatisticController(c *gin.Context) {
+	userId, exists := c.Get("userID")
+	if !exists {
+		response.Fail(c, 401, "用户未认证")
+		return
+	}
+	role, exists := c.Get("role")
+	if !exists {
+		response.Fail(c, 401, "用户角色未识别")
+		return
+	}
+	result, err := service.GetComplaintStatisticService(userId.(int), role.(string))
+	if err != nil {
+		log.Println("获取投诉统计信息失败:", err)
+		response.Fail(c, 500, "Failed to get complaint statistics: "+err.Error())
+		return
+	}
+	response.Success(c, result)
+}

@@ -81,6 +81,7 @@ func SetupRouter() *gin.Engine {
 			home.GET("/complaint_types", controllers.GetComplaintTypesController)
 			home.POST("/complaint_list", controllers.GetComplaintListController)
 			home.GET("/complaint_reply", controllers.GetComplaintReplyController)
+			home.GET("/complaint_statistic", controllers.GetComplaintStatisticController)
 		}
 		adminUser := api.Group("/admin_user")
 		adminUser.Use(middlewares.TokenAuthRequired)

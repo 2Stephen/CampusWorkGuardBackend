@@ -26,3 +26,11 @@ type ComplaintReply struct {
 	CompanyDefense string `json:"companyDefense"`
 	ResultInfo     string `json:"resultInfo"`
 }
+
+type ComplaintStatistics struct {
+	SubmittedNums     int `json:"submittedNums"`
+	ProcessedNums     int `json:"processedNums"`
+	ResolvedNums      int `json:"resolvedNums"`
+	TotalNums         int `json:"totalNums"`
+	ThirtyDaysNewNums int `json:"thirtyDaysNewNums"`
+}
